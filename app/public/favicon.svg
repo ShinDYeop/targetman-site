@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="10" fill="#14603C"/>
+  <rect x="9" y="19" width="46" height="26" rx="4" fill="#FFFFFF"/>
+  <rect x="12.5" y="22.5" width="39" height="19" rx="2" fill="none" stroke="#14603C" stroke-width="2"/>
+  <text x="32" y="36.5" font-family="'IBM Plex Mono',ui-monospace,monospace" font-size="14" font-weight="600" fill="#14603C" text-anchor="middle" letter-spacing="1">TM</text>
+</svg>
