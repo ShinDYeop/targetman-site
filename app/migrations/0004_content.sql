@@ -1,0 +1,49 @@
+-- 사장님이 직접 입력하는 콘텐츠. 코드가 아니라 여기에 쌓입니다.
+CREATE TABLE IF NOT EXISTS reviews (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  no INTEGER NOT NULL DEFAULT 0,
+  date TEXT NOT NULL DEFAULT '',
+  brand TEXT NOT NULL DEFAULT '',
+  model TEXT NOT NULL DEFAULT '',
+  contract TEXT NOT NULL DEFAULT '리스',
+  term INTEGER NOT NULL DEFAULT 0,
+  region TEXT NOT NULL DEFAULT '',
+  owner TEXT NOT NULL DEFAULT '개인',
+  customer TEXT NOT NULL DEFAULT '',
+  quote TEXT NOT NULL DEFAULT '',
+  reply TEXT NOT NULL DEFAULT '',
+  photo TEXT NOT NULL DEFAULT '',
+  published INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_reviews_order ON reviews (published, no DESC);
+
+CREATE TABLE IF NOT EXISTS stock (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT '판매중',
+  brand TEXT NOT NULL DEFAULT '',
+  model TEXT NOT NULL DEFAULT '',
+  trim TEXT NOT NULL DEFAULT '',
+  year INTEGER NOT NULL DEFAULT 0,
+  color_ext TEXT NOT NULL DEFAULT '',
+  color_int TEXT NOT NULL DEFAULT '',
+  mileage_km INTEGER NOT NULL DEFAULT 0,
+  contract TEXT NOT NULL DEFAULT '리스 · 장기렌트',
+  avail_date TEXT NOT NULL DEFAULT '즉시',
+  term_months INTEGER NOT NULL DEFAULT 48,
+  prepay_pct INTEGER NOT NULL DEFAULT 0,
+  deposit_pct INTEGER NOT NULL DEFAULT 0,
+  monthly_from INTEGER NOT NULL DEFAULT 0,
+  options TEXT NOT NULL DEFAULT '',
+  note TEXT NOT NULL DEFAULT '',
+  photo TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_stock_order ON stock (sort_order DESC, id DESC);
+
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL DEFAULT ''
+);

@@ -1,5 +1,3 @@
-import { REVIEWS } from "../data/reviews";
-
 export const SITE = {
   brand: "타겟맨 신동엽",
   brandShort: "타겟맨",
@@ -10,13 +8,6 @@ export const SITE = {
   phoneTel: "01051130850",
   email: "ehdduq121@naver.com",
   address: "경기 남양주시 덕송2로 62, 604호",
-  updatedAt: "2026.09.14 09:20",
-} as const;
-
-export const LEDGER = {
-  total: 513,
-  thisMonth: 12,
-  reviews: REVIEWS.length,
 } as const;
 
 export const NAV = [
@@ -25,6 +16,7 @@ export const NAV = [
   { to: "/service", label: "서비스 안내" },
   { to: "/videos", label: "영상" },
   { to: "/about", label: "담당자" },
+  { to: "/consult", label: "상담 남기기" },
 ] as const;
 
 /**
