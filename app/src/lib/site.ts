@@ -16,7 +16,6 @@ export const NAV = [
   { to: "/service", label: "서비스 안내" },
   { to: "/videos", label: "영상" },
   { to: "/about", label: "담당자" },
-  { to: "/consult", label: "상담 남기기" },
 ] as const;
 
 /**
