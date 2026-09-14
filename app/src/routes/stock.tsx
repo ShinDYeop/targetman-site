@@ -3,8 +3,8 @@ import { useMemo, useState } from "react";
 
 import { Page, SecHead } from "../components/site/chrome";
 import { StockCard } from "../components/site/cards";
-import { STOCK } from "../data/stock";
-import { SITE, kakaoLink } from "../lib/site";
+import { loadSiteContent } from "../lib/api/content.functions";
+import { kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/stock")({
   head: () => ({
@@ -17,30 +17,32 @@ export const Route = createFileRoute("/stock")({
       },
     ],
   }),
+  loader: async () => await loadSiteContent(),
   component: Stock,
 });
 
 function Stock() {
+  const data = Route.useLoaderData();
   const [brand, setBrand] = useState("전체");
   const [contract, setContract] = useState("전체");
   const [onlyNow, setOnlyNow] = useState(false);
 
   const brands = useMemo(
-    () => ["전체", ...Array.from(new Set(STOCK.map((s) => s.brand)))],
-    [],
+    () => ["전체", ...Array.from(new Set(data.stock.map((s) => s.brand)))],
+    [data.stock],
   );
 
-  const list = STOCK.filter(
+  const list = data.stock.filter(
     (s) =>
       (brand === "전체" || s.brand === brand) &&
       (contract === "전체" || s.contract.includes(contract)) &&
       (!onlyNow || (s.availDate === "즉시" && s.status !== "계약완료")),
   );
 
-  const openCount = STOCK.filter((s) => s.status !== "계약완료").length;
+  const openCount = data.stock.filter((s) => s.status !== "계약완료").length;
 
   return (
-    <Page src="stock">
+    <Page src="stock" sample={data.stockIsSample ? "재고 목록" : undefined}>
       <div className="t-wrap">
         <section className="t-sec" style={{ paddingTop: 48 }}>
           <div className="t-eyebrow">Stock</div>
@@ -51,9 +53,11 @@ function Stock() {
             className="t-note t-col"
             style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 6 }}
           >
-            <b className="t-mono" style={{ fontSize: 13, color: "var(--t-plate)" }}>
-              {SITE.updatedAt} 기준
-            </b>
+            {data.ledger.updatedAt ? (
+              <b className="t-mono" style={{ fontSize: 13, color: "var(--t-accent)" }}>
+                {data.ledger.updatedAt} 기준
+              </b>
+            ) : null}
             <span>
               캐피탈에서 받은 자료를 주 2회 반영합니다. 계약이 완료된 차량은 목록에서 지우지
               않고 마감 표시로 남겨 둡니다. 실제로 나간다는 기록이자, 방금 나갔다는 설명이

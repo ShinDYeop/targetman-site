@@ -3,8 +3,8 @@ import { useMemo, useState } from "react";
 
 import { Page, SecHead } from "../components/site/chrome";
 import { ReviewCard } from "../components/site/cards";
-import { REVIEWS } from "../data/reviews";
-import { LEDGER, kakaoLink } from "../lib/site";
+import { loadSiteContent } from "../lib/api/content.functions";
+import { kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/reviews")({
   head: () => ({
@@ -17,31 +17,33 @@ export const Route = createFileRoute("/reviews")({
       },
     ],
   }),
+  loader: async () => await loadSiteContent(),
   component: Reviews,
 });
 
 function Reviews() {
+  const data = Route.useLoaderData();
   const [brand, setBrand] = useState("전체");
   const [contract, setContract] = useState("전체");
 
   const brands = useMemo(
-    () => ["전체", ...Array.from(new Set(REVIEWS.map((r) => r.brand)))],
-    [],
+    () => ["전체", ...Array.from(new Set(data.reviews.map((r) => r.brand)))],
+    [data.reviews],
   );
 
-  const list = REVIEWS.filter(
+  const list = data.reviews.filter(
     (r) =>
       (brand === "전체" || r.brand === brand) &&
       (contract === "전체" || r.contract === contract),
   );
 
   return (
-    <Page src="reviews">
+    <Page src="reviews" sample={data.reviewsAreSample ? "출고 후기" : undefined}>
       <div className="t-wrap">
         <section className="t-sec" style={{ paddingTop: 48 }}>
           <div className="t-eyebrow">Reviews</div>
           <h1 style={{ fontSize: "clamp(28px,4vw,42px)", marginTop: 12, lineHeight: 1.3 }}>
-            지금까지 {LEDGER.total}대를 인도했습니다.
+            지금까지 {data.ledger.total}대를 인도했습니다.
           </h1>
           <p className="t-lede t-col" style={{ marginTop: 18 }}>
             사진과 날짜가 남아 있는 건만 올립니다. 고객이 쓴 문장은 맞춤법도 고치지 않습니다.
