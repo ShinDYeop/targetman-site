@@ -261,6 +261,19 @@ function Admin() {
                   <span className="t-rev-meta t-mono" style={{ marginLeft: "auto" }}>
                     {when(r.created_at)}
                   </span>
+                  <button
+                    type="button"
+                    className="t-cta-text"
+                    style={{ color: "var(--t-notice)" }}
+                    onClick={async () => {
+                      if (!window.confirm(`${r.name} 님의 요청을 지울까요? 되돌릴 수 없습니다.`)) return;
+                      await deleteRow({ data: { password, table: "quote_requests", id: r.id } });
+                      flash("삭제했습니다.");
+                      await refresh();
+                    }}
+                  >
+                    삭제
+                  </button>
                 </div>
                 <dl className="t-spec" style={{ marginTop: 10 }}>
                   {r.brand || r.model ? (
