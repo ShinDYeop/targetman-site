@@ -102,16 +102,9 @@ function Admin() {
           </dd>
         </div>
         <div>
-          <dt>견적 요청</dt>
+          <dt>마케팅 동의</dt>
           <dd>
-            {rows.filter((r) => r.src.startsWith("quote")).length}
-            <small>건</small>
-          </dd>
-        </div>
-        <div>
-          <dt>상담 남기기</dt>
-          <dd>
-            {rows.filter((r) => r.src.startsWith("consult")).length}
+            {rows.filter((r) => r.marketing_optin === 1).length}
             <small>건</small>
           </dd>
         </div>
@@ -126,8 +119,8 @@ function Admin() {
         {rows.map((r) => (
           <article className="t-card" key={r.id}>
             <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-              <span className="t-badge" data-k={r.src.startsWith("consult") ? "talk" : "now"}>
-                {r.src.startsWith("consult") ? "상담" : "견적"}
+              <span className="t-badge" data-k="now">
+                견적
               </span>
               <strong style={{ fontSize: 17 }}>{r.name}</strong>
               <a

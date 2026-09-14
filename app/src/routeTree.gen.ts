@@ -14,7 +14,6 @@ import { Route as StockRouteImport } from './routes/stock'
 import { Route as ServiceRouteImport } from './routes/service'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as QuoteRouteImport } from './routes/quote'
-import { Route as ConsultRouteImport } from './routes/consult'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -44,11 +43,6 @@ const ReviewsRoute = ReviewsRouteImport.update({
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConsultRoute = ConsultRouteImport.update({
-  id: '/consult',
-  path: '/consult',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -83,7 +77,6 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
-  '/consult': typeof ConsultRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -96,7 +89,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
-  '/consult': typeof ConsultRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -110,7 +102,6 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
-  '/consult': typeof ConsultRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -125,7 +116,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin'
-    | '/consult'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin'
-    | '/consult'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin'
-    | '/consult'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -165,7 +153,6 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
-  ConsultRoute: typeof ConsultRoute
   QuoteRoute: typeof QuoteRoute
   ReviewsRoute: typeof ReviewsRoute
   ServiceRoute: typeof ServiceRoute
@@ -208,13 +195,6 @@ declare module '@tanstack/react-router' {
       path: '/quote'
       fullPath: '/quote'
       preLoaderRoute: typeof QuoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/consult': {
-      id: '/consult'
-      path: '/consult'
-      fullPath: '/consult'
-      preLoaderRoute: typeof ConsultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -261,7 +241,6 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
-  ConsultRoute: ConsultRoute,
   QuoteRoute: QuoteRoute,
   ReviewsRoute: ReviewsRoute,
   ServiceRoute: ServiceRoute,

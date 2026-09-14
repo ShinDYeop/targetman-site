@@ -58,7 +58,7 @@ export function MobileBar({ src }: { src: string }) {
         <a href={kakaoLink(src)} target="_blank" rel="noreferrer">
           카톡 상담
         </a>
-        <Link to="/consult">상담 남기기</Link>
+        <Link to="/quote">견적 요청</Link>
       </nav>
     </>
   );
