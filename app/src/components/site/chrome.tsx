@@ -12,14 +12,14 @@ export function Plate({ no, size }: { no: number | string; size?: "lg" }) {
   );
 }
 
-export function SampleNotice() {
+export function SampleNotice({ what }: { what: string }) {
   return (
     <div className="t-notice">
       <div className="t-wrap">
         <b>안내</b>
         <span>
-          아래 출고 후기와 재고 목록은 화면 구조를 보여주기 위한 예시입니다. 실제 기록으로
-          교체하는 중이며, 상담과 견적 요청은 정상적으로 접수됩니다.
+          아래 {what}은 화면 구조를 보여주기 위한 예시입니다. 관리자 페이지에서 첫 건을
+          등록하시면 예시는 사라집니다. 견적 요청은 지금도 정상적으로 접수됩니다.
         </span>
       </div>
     </div>
@@ -58,7 +58,7 @@ export function MobileBar({ src }: { src: string }) {
         <a href={kakaoLink(src)} target="_blank" rel="noreferrer">
           카톡 상담
         </a>
-        <Link to="/quote">견적 요청</Link>
+        <Link to="/consult">상담 남기기</Link>
       </nav>
     </>
   );
@@ -107,10 +107,18 @@ export function Footer() {
   );
 }
 
-export function Page({ src, children }: { src: string; children: ReactNode }) {
+export function Page({
+  src,
+  sample,
+  children,
+}: {
+  src: string;
+  sample?: string;
+  children: ReactNode;
+}) {
   return (
     <>
-      <SampleNotice />
+      {sample ? <SampleNotice what={sample} /> : null}
       <Header />
       <main>{children}</main>
       <Footer />
