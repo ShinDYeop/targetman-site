@@ -75,3 +75,23 @@ export const SAMPLE_STOCK: StockItem[] = [
     photo: "", sortOrder: 92,
   },
 ];
+
+/** 견적 요청 폼의 브랜드 선택지. 재고와 무관하게 고정입니다. */
+export const BRANDS: readonly string[] = [
+  "현대",
+  "기아",
+  "제네시스",
+  "벤츠",
+  "BMW",
+  "아우디",
+  "폭스바겐",
+  "볼보",
+  "렉서스",
+  "토요타",
+  "포르쉐",
+  "테슬라",
+  "쉐보레",
+  "KG모빌리티",
+  "미니",
+  "랜드로버",
+] as const;
