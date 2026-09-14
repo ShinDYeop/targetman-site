@@ -1,1 +1,27 @@
 node_modules
+
+# 비밀값은 절대 저장소에 들어가지 않습니다. 배포 환경변수로만 관리합니다.
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.env.local
+secrets.json
+credentials.json
+service-account*.json
+
+# 키와 인증서
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+*.keystore
+
+# 빌드/런타임 부산물
+dist
+.wrangler
+.output
+.vercel
+.DS_Store
