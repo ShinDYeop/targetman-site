@@ -19,7 +19,10 @@ const DEFAULT_TITLE = "타겟맨 신동엽";
 const DEFAULT_DESCRIPTION = "리스 장기렌트 출고 대장";
 
 const FONT_HREF =
-  "https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap";
+  "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap";
+// Pretendard: Korean dynamic subset, so only the glyphs a page uses are fetched.
+const PRETENDARD_HREF =
+  "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 type AppMeta = {
   og_title?: string | null;
@@ -74,6 +77,7 @@ function buildHead(meta: AppMeta) {
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: PRETENDARD_HREF },
       { rel: "stylesheet", href: FONT_HREF },
       ...(favicon ? [{ rel: "icon", href: favicon }] : []),
     ],
