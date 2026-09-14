@@ -2,11 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Page, SecHead, Plate } from "../components/site/chrome";
 import { ReviewCard, StockCard } from "../components/site/cards";
-import { REVIEWS } from "../data/reviews";
-import { STOCK } from "../data/stock";
-import { SITE, LEDGER, kakaoLink } from "../lib/site";
+import { loadSiteContent } from "../lib/api/content.functions";
+import { SITE, kakaoLink } from "../lib/site";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  loader: async () => await loadSiteContent(),
+  component: Home,
+});
 
 const STEPS = [
   { n: "01", t: "상담", d: "원하시는 차종, 명의, 예산 범위를 확인합니다. 이 단계에서 서류는 필요 없습니다.", w: "당일" },
@@ -17,44 +19,50 @@ const STEPS = [
 ];
 
 function Home() {
-  const latest = REVIEWS.slice(0, 3);
-  const ledger = REVIEWS.slice(0, 6);
-  const stock = STOCK.filter((s) => s.status !== "계약완료").slice(0, 3);
+  const data = Route.useLoaderData();
+  const latest = data.reviews.slice(0, 3);
+  const ledgerRows = data.reviews.slice(0, 6);
+  const stock = data.stock.filter((s) => s.status !== "계약완료").slice(0, 3);
+
+  const sample = [
+    data.reviewsAreSample ? "출고 후기" : "",
+    data.stockIsSample ? "재고 목록" : "",
+  ]
+    .filter(Boolean)
+    .join("와 ");
 
   return (
-    <Page src="home">
+    <Page src="home" sample={sample}>
       <div className="t-wrap">
         <section className="t-hero">
-          <div>
-            <div className="t-eyebrow t-rise">출고 대장 · Delivery Ledger</div>
-            <h1 className="t-rise t-rise-2">
-              유튜브에서 보시던 그 사람이,
-              <br />
-              계약서 끝까지 직접 담당합니다.
-            </h1>
-            <p className="t-sub t-rise t-rise-3">
-              출고 한 건마다 번호를 붙여 공개합니다. 몇 대를 인도했는지, 고객이 실제로 뭐라고
-              했는지, 지금 바로 받을 수 있는 차가 무엇인지 전부 이 페이지에 있습니다.
-            </p>
-            <div className="t-hero-actions">
-              <Link to="/stock" className="t-cta-plate">
-                이번 달 즉시출고 차량 보기
-              </Link>
-              <a
-                className="t-cta-text"
-                href={kakaoLink("home_hero")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
-              </a>
-            </div>
+          <div className="t-eyebrow t-rise">리스 · 장기렌트 출고 대장</div>
+          <h1 className="t-rise t-rise-2">
+            유튜브에서 보시던 그 사람이,
+            <br />
+            계약서 끝까지 직접 담당합니다.
+          </h1>
+          <p className="t-sub t-rise t-rise-3">
+            출고 한 건마다 번호를 붙여 공개합니다. 몇 대를 인도했는지, 고객이 실제로 뭐라고
+            했는지, 지금 바로 받을 수 있는 차가 무엇인지 전부 이 페이지에 있습니다.
+          </p>
+          <div className="t-hero-actions">
+            <Link to="/stock" className="t-cta-plate">
+              이번 달 즉시출고 차량 보기
+            </Link>
+            <a
+              className="t-cta-text"
+              href={kakaoLink("home_hero")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
+            </a>
           </div>
 
           <div className="t-ledger t-rise t-rise-2">
             <div className="t-ledger-hd">최근 출고 기록</div>
-            {ledger.map((r) => (
-              <div className="t-ledger-row" key={r.no}>
+            {ledgerRows.map((r) => (
+              <div className="t-ledger-row" key={r.id}>
                 <span className="t-no">No.{r.no}</span>
                 <span className="t-car">
                   {r.brand} {r.model}
@@ -69,21 +77,21 @@ function Home() {
           <div>
             <dt>누적 출고</dt>
             <dd>
-              {LEDGER.total}
+              {data.ledger.total}
               <small>대</small>
             </dd>
           </div>
           <div>
             <dt>이번 달 출고</dt>
             <dd>
-              {LEDGER.thisMonth}
+              {data.ledger.thisMonth}
               <small>대</small>
             </dd>
           </div>
           <div>
             <dt>등록된 후기</dt>
             <dd>
-              {LEDGER.reviews}
+              {data.reviews.length}
               <small>건</small>
             </dd>
           </div>
@@ -95,17 +103,17 @@ function Home() {
             title="출고 후기"
             aside={
               <Link to="/reviews" className="t-cta-text">
-                {LEDGER.reviews}건 전체 보기 <i aria-hidden="true">&rsaquo;</i>
+                전체 보기 <i aria-hidden="true">&rsaquo;</i>
               </Link>
             }
           />
-          <p className="t-lede t-col" style={{ marginBottom: 24 }}>
+          <p className="t-lede" style={{ marginBottom: 14 }}>
             사진과 날짜가 있는 후기만 올립니다. 고객이 쓴 문장은 고치지 않고, 불리한 이야기도
             지우지 않습니다.
           </p>
           <div className="t-grid3">
             {latest.map((r) => (
-              <ReviewCard key={r.no} r={r} />
+              <ReviewCard key={r.id} r={r} />
             ))}
           </div>
         </section>
@@ -114,16 +122,20 @@ function Home() {
           <SecHead
             ix="02"
             title="즉시출고 가능한 재고"
-            aside={<span className="t-eyebrow">{SITE.updatedAt} 기준</span>}
+            aside={
+              data.ledger.updatedAt ? (
+                <span className="t-small">{data.ledger.updatedAt} 기준</span>
+              ) : null
+            }
           />
-          <p className="t-lede t-col" style={{ marginBottom: 24 }}>
+          <p className="t-lede" style={{ marginBottom: 14 }}>
             캐피탈에서 받은 자료를 주 2회 반영합니다. 계약이 완료된 차량은 지우지 않고 마감
             표시로 남겨 둡니다.
           </p>
           {stock.map((s) => (
             <StockCard key={s.id} s={s} />
           ))}
-          <p style={{ marginTop: 22 }}>
+          <p style={{ marginTop: 16 }}>
             <Link to="/stock" className="t-cta-text">
               재고 전체 보기 <i aria-hidden="true">&rsaquo;</i>
             </Link>
@@ -170,11 +182,11 @@ function Home() {
               </tbody>
             </table>
           </div>
-          <div className="t-note t-col" style={{ marginTop: 20 }}>
+          <div className="t-note" style={{ marginTop: 14 }}>
             둘 중 무엇이 유리한지는 명의, 보험 경력, 주행거리, 만기 계획에 따라 완전히
             달라집니다. 표만 보고 결정하지 마시고 한 번 물어보세요.
           </div>
-          <p style={{ marginTop: 20 }}>
+          <p style={{ marginTop: 14 }}>
             <a className="t-cta-text" href={kakaoLink("home_compare")} target="_blank" rel="noreferrer">
               내 상황엔 뭐가 맞는지 물어보기 <i aria-hidden="true">&rsaquo;</i>
             </a>
@@ -200,12 +212,12 @@ function Home() {
           <div className="t-grid2">
             <div className="t-card">
               <Plate no="TM" size="lg" />
-              <h3 style={{ fontSize: 22, marginTop: 14 }}>{SITE.brand}</h3>
-              <p className="t-lede" style={{ marginTop: 12, fontSize: 15.5 }}>
+              <h3 style={{ fontSize: 18, marginTop: 10 }}>{SITE.brand}</h3>
+              <p className="t-lede" style={{ marginTop: 8 }}>
                 유튜브 채널에서 차량 리뷰와 리스 장기렌트 조건을 설명하는 사람과 실제 계약을
                 담당하는 사람이 같습니다. 상담 중 담당자가 바뀌지 않습니다.
               </p>
-              <p style={{ marginTop: 18 }}>
+              <p style={{ marginTop: 14 }}>
                 <Link to="/about" className="t-cta-text">
                   담당자 소개 <i aria-hidden="true">&rsaquo;</i>
                 </Link>
@@ -213,12 +225,12 @@ function Home() {
             </div>
             <div className="t-card">
               <div className="t-eyebrow">YouTube</div>
-              <h3 style={{ fontSize: 20, marginTop: 10 }}>영상으로 먼저 확인하세요</h3>
-              <p className="t-lede" style={{ marginTop: 12, fontSize: 15.5 }}>
+              <h3 style={{ fontSize: 17, marginTop: 8 }}>영상으로 먼저 확인하세요</h3>
+              <p className="t-lede" style={{ marginTop: 8 }}>
                 이 페이지의 후기와 재고에 나오는 차종은 대부분 채널에 영상이 있습니다. 글과
                 영상이 서로를 확인해 주는 구조입니다.
               </p>
-              <p style={{ marginTop: 18 }}>
+              <p style={{ marginTop: 14 }}>
                 <Link to="/videos" className="t-cta-text">
                   차종별 영상 보기 <i aria-hidden="true">&rsaquo;</i>
                 </Link>
