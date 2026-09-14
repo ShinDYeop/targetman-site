@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ApiUploadRouteImport } from './routes/api.upload'
+import { Route as ApiImgRouteImport } from './routes/api.img'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as StockRouteImport } from './routes/stock'
 import { Route as ServiceRouteImport } from './routes/service'
@@ -20,6 +22,16 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ApiUploadRoute = ApiUploadRouteImport.update({
+  id: '/api/upload',
+  path: '/api/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiImgRoute = ApiImgRouteImport.update({
+  id: '/api/img',
+  path: '/api/img',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/service': typeof ServiceRoute
   '/stock': typeof StockRoute
   '/videos': typeof VideosRoute
+  '/api/img': typeof ApiImgRoute
+  '/api/upload': typeof ApiUploadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/service': typeof ServiceRoute
   '/stock': typeof StockRoute
   '/videos': typeof VideosRoute
+  '/api/img': typeof ApiImgRoute
+  '/api/upload': typeof ApiUploadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/service': typeof ServiceRoute
   '/stock': typeof StockRoute
   '/videos': typeof VideosRoute
+  '/api/img': typeof ApiImgRoute
+  '/api/upload': typeof ApiUploadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +139,8 @@ export interface FileRouteTypes {
     | '/service'
     | '/stock'
     | '/videos'
+    | '/api/img'
+    | '/api/upload'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +153,8 @@ export interface FileRouteTypes {
     | '/service'
     | '/stock'
     | '/videos'
+    | '/api/img'
+    | '/api/upload'
   id:
     | '__root__'
     | '/'
@@ -145,6 +167,8 @@ export interface FileRouteTypes {
     | '/service'
     | '/stock'
     | '/videos'
+    | '/api/img'
+    | '/api/upload'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,10 +182,26 @@ export interface RootRouteChildren {
   ServiceRoute: typeof ServiceRoute
   StockRoute: typeof StockRoute
   VideosRoute: typeof VideosRoute
+  ApiImgRoute: typeof ApiImgRoute
+  ApiUploadRoute: typeof ApiUploadRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/api/upload': {
+      id: '/api/upload'
+      path: '/api/upload'
+      fullPath: '/api/upload'
+      preLoaderRoute: typeof ApiUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/img': {
+      id: '/api/img'
+      path: '/api/img'
+      fullPath: '/api/img'
+      preLoaderRoute: typeof ApiImgRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/videos': {
       id: '/videos'
       path: '/videos'
@@ -246,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   ServiceRoute: ServiceRoute,
   StockRoute: StockRoute,
   VideosRoute: VideosRoute,
+  ApiImgRoute: ApiImgRoute,
+  ApiUploadRoute: ApiUploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
