@@ -216,13 +216,18 @@ export const saveStock = createServerFn({ method: "POST" })
   });
 
 export const deleteRow = createServerFn({ method: "POST" })
-  .inputValidator(Pw.extend({ table: z.enum(["reviews", "stock"]), id: z.number() }))
+  .inputValidator(Pw.extend({ table: z.enum(["reviews", "stock", "quote_requests"]), id: z.number() }))
   .handler(async ({ data }) => {
     const auth = await requireAdmin(data.password);
     if (!auth.ok) return { ok: false as const, reason: auth.reason };
     const { DB } = bindings();
     if (!DB) return { ok: false as const, reason: "storage_unavailable" };
-    const sql = data.table === "reviews" ? "DELETE FROM reviews WHERE id = ?" : "DELETE FROM stock WHERE id = ?";
+    const sql =
+      data.table === "reviews"
+        ? "DELETE FROM reviews WHERE id = ?"
+        : data.table === "stock"
+          ? "DELETE FROM stock WHERE id = ?"
+          : "DELETE FROM quote_requests WHERE id = ?";
     await DB.prepare(sql).bind(Math.floor(data.id)).run();
     return { ok: true as const };
   });
