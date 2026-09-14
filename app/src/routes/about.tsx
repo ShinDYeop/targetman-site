@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Page, SecHead, Plate } from "../components/site/chrome";
-import { SITE, LEDGER, kakaoLink } from "../lib/site";
+import { loadSiteContent } from "../lib/api/content.functions";
+import { SITE, kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -13,10 +14,12 @@ export const Route = createFileRoute("/about")({
       },
     ],
   }),
+  loader: async () => await loadSiteContent(),
   component: About,
 });
 
 function About() {
+  const data = Route.useLoaderData();
   return (
     <Page src="about">
       <div className="t-wrap">
@@ -41,7 +44,9 @@ function About() {
                 {SITE.tagline} 상담 및 출고 담당
               </p>
               <ul className="t-list" style={{ marginTop: 18 }}>
-                <li>누적 출고 {LEDGER.total}대, 등록 후기 {LEDGER.reviews}건</li>
+                <li>
+                  누적 출고 {data.ledger.total}대, 등록 후기 {data.reviews.length}건
+                </li>
                 <li>수입차와 국산차 리스 장기렌트 전 차종 상담</li>
                 <li>개인, 개인사업자, 법인 명의 모두 진행</li>
                 <li>유튜브 채널에서 차량 리뷰와 계약 조건을 직접 설명</li>

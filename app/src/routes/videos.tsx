@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Page, SecHead } from "../components/site/chrome";
-import { REVIEWS } from "../data/reviews";
+import { loadSiteContent } from "../lib/api/content.functions";
 import { SITE, kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/videos")({
@@ -14,11 +14,13 @@ export const Route = createFileRoute("/videos")({
       },
     ],
   }),
+  loader: async () => await loadSiteContent(),
   component: Videos,
 });
 
 function Videos() {
-  const brands = Array.from(new Set(REVIEWS.map((r) => r.brand)));
+  const data = Route.useLoaderData();
+  const brands = Array.from(new Set(data.reviews.map((r) => r.brand)));
 
   return (
     <Page src="videos">
@@ -47,7 +49,7 @@ function Videos() {
           </p>
           <div className="t-grid3">
             {brands.map((b) => {
-              const count = REVIEWS.filter((r) => r.brand === b).length;
+              const count = data.reviews.filter((r) => r.brand === b).length;
               return (
                 <div className="t-rev" key={b}>
                   <div className="t-rev-photo">
