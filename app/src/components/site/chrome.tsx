@@ -16,10 +16,10 @@ export function SampleNotice() {
   return (
     <div className="t-notice">
       <div className="t-wrap">
-        <b>샘플</b>
+        <b>안내</b>
         <span>
-          이 페이지의 출고 후기, 재고, 누적 수치는 화면 구조를 확인하기 위한 예시 데이터입니다.
-          실제 출고 기록으로 교체하기 전까지는 실적으로 읽지 말아 주세요.
+          아래 출고 후기와 재고 목록은 화면 구조를 보여주기 위한 예시입니다. 실제 기록으로
+          교체하는 중이며, 상담과 견적 요청은 정상적으로 접수됩니다.
         </span>
       </div>
     </div>
@@ -58,7 +58,7 @@ export function MobileBar({ src }: { src: string }) {
         <a href={kakaoLink(src)} target="_blank" rel="noreferrer">
           카톡 상담
         </a>
-        <Link to="/quote">견적 요청</Link>
+        <Link to="/consult">상담 남기기</Link>
       </nav>
     </>
   );
@@ -77,30 +77,27 @@ export function Footer() {
           </a>
         </div>
         <div>
-          <b>사업자 정보</b>
-          상호 {SITE.bizName}
+          <b>연락처</b>
+          <a href={`tel:${SITE.phoneTel}`}>{SITE.phone}</a>
           <br />
-          사업자등록번호 {SITE.bizNo}
-          <br />
-          {SITE.address}
-        </div>
-        <div>
-          <b>문의</b>
-          {SITE.phone}
+          <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
           <br />
           <a href={kakaoLink("footer")} target="_blank" rel="noreferrer">
-            카카오톡 채널
+            카카오톡 상담
           </a>
         </div>
         <div>
-          <b>안내</b>
-          견적 요청 시 수집한 연락처는 견적 안내 목적으로만 사용하며, 상담 종료 후 6개월이
-          지나면 파기합니다. 월 납입금은 계약기간, 선납금, 보증금, 연간 주행거리에 따라
-          달라집니다.
+          <b>사업장</b>
+          {SITE.address}
+          <br />
+          상담 가능 시간 평일 09~19시
         </div>
-      </div>
-      <div className="t-wrap" style={{ marginTop: 24, fontSize: 12 }}>
-        사업자 정보, 연락처, 채널 주소는 실제 값으로 교체할 자리입니다.
+        <div>
+          <b>개인정보 안내</b>
+          상담과 견적 요청 시 수집한 성함, 연락처, 상담 내용은 상담 진행 목적으로만
+          사용하며, 상담 종료 후 6개월이 지나면 파기합니다. 월 납입금은 계약기간, 선납금,
+          보증금, 연간 주행거리에 따라 달라집니다.
+        </div>
       </div>
     </footer>
   );

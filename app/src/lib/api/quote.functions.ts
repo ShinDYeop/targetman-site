@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { bindings } from "../bindings.server";
+import { notifyOwner, formatNotification } from "./notify.server";
 
 const QuoteInput = z.object({
   brand: z.string().max(60).default(""),
@@ -51,5 +52,22 @@ export const submitQuote = createServerFn({ method: "POST" })
         data.marketingOptin ? 1 : 0,
       )
       .run();
+
+    await notifyOwner(
+      `[견적] ${data.name} 님 (${data.phone})`,
+      formatNotification({
+        kind: "견적",
+        name: data.name,
+        phone: data.phone,
+        brand: data.brand,
+        model: data.model,
+        contractType: data.contractType,
+        budget: data.budget,
+        timing: data.timing,
+        callWindow: data.callWindow,
+        memo: data.memo,
+      }),
+    );
+
     return { ok: true as const };
   });
