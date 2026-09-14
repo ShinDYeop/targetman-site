@@ -14,6 +14,8 @@ import { Route as StockRouteImport } from './routes/stock'
 import { Route as ServiceRouteImport } from './routes/service'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as ConsultRouteImport } from './routes/consult'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -44,6 +46,16 @@ const QuoteRoute = QuoteRouteImport.update({
   path: '/quote',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsultRoute = ConsultRouteImport.update({
+  id: '/consult',
+  path: '/consult',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -70,6 +82,8 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/consult': typeof ConsultRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -81,6 +95,8 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/consult': typeof ConsultRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -93,6 +109,8 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/consult': typeof ConsultRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -106,6 +124,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/about'
+    | '/admin'
+    | '/consult'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -117,6 +137,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/about'
+    | '/admin'
+    | '/consult'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -128,6 +150,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/about'
+    | '/admin'
+    | '/consult'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -140,6 +164,8 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
+  ConsultRoute: typeof ConsultRoute
   QuoteRoute: typeof QuoteRoute
   ReviewsRoute: typeof ReviewsRoute
   ServiceRoute: typeof ServiceRoute
@@ -184,6 +210,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuoteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consult': {
+      id: '/consult'
+      path: '/consult'
+      fullPath: '/consult'
+      preLoaderRoute: typeof ConsultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -220,6 +260,8 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
+  ConsultRoute: ConsultRoute,
   QuoteRoute: QuoteRoute,
   ReviewsRoute: ReviewsRoute,
   ServiceRoute: ServiceRoute,

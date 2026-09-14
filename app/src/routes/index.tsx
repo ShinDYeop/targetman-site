@@ -48,6 +48,9 @@ function Home() {
               >
                 1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
               </a>
+              <Link to="/consult" className="t-cta-text">
+                상담 내용 남기기 <i aria-hidden="true">&rsaquo;</i>
+              </Link>
             </div>
           </div>
 
@@ -85,13 +88,6 @@ function Home() {
             <dd>
               {LEDGER.reviews}
               <small>건</small>
-            </dd>
-          </div>
-          <div>
-            <dt>업력</dt>
-            <dd>
-              {LEDGER.years}
-              <small>년</small>
             </dd>
           </div>
         </dl>

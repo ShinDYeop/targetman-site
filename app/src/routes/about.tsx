@@ -54,29 +54,37 @@ function About() {
             </div>
 
             <div className="t-card">
-              <div className="t-eyebrow">사업자 정보</div>
+              <div className="t-eyebrow">연락처</div>
               <h3 style={{ fontSize: 19, marginTop: 10 }}>확인하실 수 있게 공개합니다</h3>
               <dl className="t-spec" style={{ marginTop: 16, gridTemplateColumns: "1fr" }}>
                 <div>
-                  <dt>상호</dt>
-                  <dd>{SITE.bizName}</dd>
+                  <dt>전화</dt>
+                  <dd className="t-mono">
+                    <a href={`tel:${SITE.phoneTel}`} style={{ color: "var(--t-plate)" }}>
+                      {SITE.phone}
+                    </a>
+                  </dd>
                 </div>
                 <div>
-                  <dt>사업자등록번호</dt>
-                  <dd className="t-mono">{SITE.bizNo}</dd>
+                  <dt>이메일</dt>
+                  <dd>
+                    <a href={`mailto:${SITE.email}`} style={{ color: "var(--t-plate)" }}>
+                      {SITE.email}
+                    </a>
+                  </dd>
                 </div>
                 <div>
                   <dt>사업장 소재지</dt>
                   <dd>{SITE.address}</dd>
                 </div>
                 <div>
-                  <dt>연락처</dt>
-                  <dd className="t-mono">{SITE.phone}</dd>
+                  <dt>상담 가능 시간</dt>
+                  <dd>평일 09~19시</dd>
                 </div>
               </dl>
               <p className="t-small" style={{ marginTop: 16 }}>
-                위 항목은 실제 사업자 정보로 교체할 자리입니다. 국세청 사업자등록 상태 조회로
-                직접 확인하실 수 있도록 정확한 값을 넣어 두는 것이 좋습니다.
+                전화가 어려우실 때는 카톡이나 상담 남기기를 이용해 주세요. 남겨 주신 내용은
+                제가 직접 확인합니다.
               </p>
             </div>
           </div>
