@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Page } from "../components/site/chrome";
 import { submitConsult } from "../lib/api/consult.functions";
@@ -21,9 +21,27 @@ export const Route = createFileRoute("/consult")({
 
 type State = "idle" | "sending" | "done" | "error";
 
+function failMessage(reason: string) {
+  switch (reason) {
+    case "too_fast":
+      return "잠시 후 다시 시도해 주세요.";
+    case "rate_phone":
+      return "같은 번호로 접수가 너무 잦습니다. 한 시간 뒤에 다시 시도하시거나 카톡으로 문의해 주세요.";
+    case "rate_global":
+      return "지금 접수가 몰리고 있습니다. 잠시 후 다시 시도하시거나 카톡으로 문의해 주세요.";
+    case "bad_phone":
+      return "연락처를 다시 확인해 주세요.";
+    default:
+      return "전송에 실패했습니다. 잠시 후 다시 시도하시거나 카톡으로 바로 문의해 주세요.";
+  }
+}
+
+
 function Consult() {
   const [state, setState] = useState<State>("idle");
   const [agree, setAgree] = useState(false);
+  const [failReason, setFailReason] = useState("");
+  const openedAt = useRef(Date.now());
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,9 +58,16 @@ function Consult() {
           memo: get("memo"),
           src: "consult_page",
           marketingOptin: fd.get("marketing") === "on",
+          hp: String(fd.get("company") ?? ""),
+          elapsedMs: Date.now() - openedAt.current,
         },
       });
-      setState(res.ok ? "done" : "error");
+      if (res.ok) {
+        setState("done");
+      } else {
+        setFailReason(res.reason ?? "");
+        setState("error");
+      }
     } catch {
       setState("error");
     }
@@ -90,6 +115,11 @@ function Consult() {
           </p>
 
           <form className="t-form" style={{ marginTop: 28 }} onSubmit={onSubmit}>
+            <div className="t-hp" aria-hidden="true">
+              <label htmlFor="c-company">회사명</label>
+              <input id="c-company" name="company" tabIndex={-1} autoComplete="off" />
+            </div>
+
             <div className="t-field">
               <label htmlFor="c-memo">상담 내용</label>
               <textarea
@@ -161,7 +191,7 @@ function Consult() {
 
             {state === "error" ? (
               <p className="t-small" style={{ marginTop: 14, color: "var(--t-notice)" }}>
-                전송에 실패했습니다. 잠시 후 다시 시도하시거나 카톡으로 바로 문의해 주세요.
+                {failMessage(failReason)}
               </p>
             ) : null}
           </form>
