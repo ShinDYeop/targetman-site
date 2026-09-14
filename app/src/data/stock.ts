@@ -1,83 +1,77 @@
-export type StockStatus = "판매중" | "상담중" | "계약완료";
+import type { StockItem } from "../lib/content";
 
-export type StockItem = {
-  id: string;
-  status: StockStatus;
-  brand: string;
-  model: string;
-  trim: string;
-  year: number;
-  colorExt: string;
-  colorInt: string;
-  mileageKm: number;
-  contract: "리스" | "장기렌트" | "리스 · 장기렌트";
-  availDate: string;
-  termMonths: number;
-  prepayPct: number;
-  depositPct: number;
-  monthlyFrom: number;
-  options: string[];
-  note: string;
-};
-
-// 샘플 데이터입니다. 캐피탈 자료를 옮긴 재고 시트로 교체할 자리입니다.
-export const STOCK: StockItem[] = [
+/** 아직 재고를 등록하지 않았을 때만 보여주는 예시입니다. */
+export const SAMPLE_STOCK: StockItem[] = [
   {
-    id: "ST-2608-013", status: "판매중", brand: "벤츠", model: "E250", trim: "AMG Line",
+    id: -1, code: "ST-2608-013", status: "판매중", brand: "벤츠", model: "E250", trim: "AMG Line",
     year: 2026, colorExt: "옵시디언 블랙", colorInt: "블랙", mileageKm: 0,
-    contract: "리스 · 장기렌트", availDate: "즉시", termMonths: 48, prepayPct: 30, depositPct: 0,
-    monthlyFrom: 890000, options: ["파노라마 선루프", "디지털 라이트", "부메스터 사운드"],
+    contract: "리스 · 장기렌트", availDate: "즉시", termMonths: 48,
+    prepayPct: 30, depositPct: 0, monthlyFrom: 890000,
+    options: "파노라마 선루프, 디지털 라이트, 부메스터 사운드",
     note: "전시 이력 없음. 서울 인수 기준.",
+    photo: "", sortOrder: 99,
   },
   {
-    id: "ST-2608-012", status: "판매중", brand: "BMW", model: "520i", trim: "M Sport",
+    id: -2, code: "ST-2608-012", status: "판매중", brand: "BMW", model: "520i", trim: "M Sport",
     year: 2026, colorExt: "알파인 화이트", colorInt: "코냑", mileageKm: 0,
-    contract: "리스", availDate: "즉시", termMonths: 36, prepayPct: 20, depositPct: 10,
-    monthlyFrom: 820000, options: ["하만카돈", "컴포트 액세스", "주차보조"],
+    contract: "리스", availDate: "즉시", termMonths: 36,
+    prepayPct: 20, depositPct: 10, monthlyFrom: 820000,
+    options: "하만카돈, 컴포트 액세스, 주차보조",
     note: "본사 배정분. 색상 변경 시 대기 발생.",
+    photo: "", sortOrder: 98,
   },
   {
-    id: "ST-2608-011", status: "상담중", brand: "제네시스", model: "G80", trim: "2.5T AWD",
+    id: -3, code: "ST-2608-011", status: "상담중", brand: "제네시스", model: "G80", trim: "2.5T AWD",
     year: 2026, colorExt: "마칼루 그레이", colorInt: "그레이", mileageKm: 0,
-    contract: "장기렌트", availDate: "즉시", termMonths: 60, prepayPct: 0, depositPct: 30,
-    monthlyFrom: 760000, options: ["프리뷰 전자제어 서스펜션", "렉시콘", "후석 모니터"],
+    contract: "장기렌트", availDate: "즉시", termMonths: 60,
+    prepayPct: 0, depositPct: 30, monthlyFrom: 760000,
+    options: "프리뷰 전자제어 서스펜션, 렉시콘, 후석 모니터",
     note: "선납 없이 보증금형으로만 구성된 건입니다.",
+    photo: "", sortOrder: 97,
   },
   {
-    id: "ST-2608-010", status: "판매중", brand: "아우디", model: "A6", trim: "45 TFSI",
+    id: -4, code: "ST-2608-010", status: "판매중", brand: "아우디", model: "A6", trim: "45 TFSI",
     year: 2025, colorExt: "미토스 블랙", colorInt: "블랙", mileageKm: 1240,
-    contract: "리스 · 장기렌트", availDate: "즉시", termMonths: 48, prepayPct: 20, depositPct: 0,
-    monthlyFrom: 690000, options: ["뱅앤올룹슨", "매트릭스 LED", "어댑티브 크루즈"],
+    contract: "리스 · 장기렌트", availDate: "즉시", termMonths: 48,
+    prepayPct: 20, depositPct: 0, monthlyFrom: 690000,
+    options: "뱅앤올룹슨, 매트릭스 LED, 어댑티브 크루즈",
     note: "시승 이력 차량. 주행거리 기재된 그대로입니다.",
+    photo: "", sortOrder: 96,
   },
   {
-    id: "ST-2608-009", status: "판매중", brand: "볼보", model: "XC60", trim: "B5 Plus",
+    id: -5, code: "ST-2608-009", status: "판매중", brand: "볼보", model: "XC60", trim: "B5 Plus",
     year: 2026, colorExt: "덴임 블루", colorInt: "차콜", mileageKm: 0,
-    contract: "장기렌트", availDate: "2026-09-10", termMonths: 60, prepayPct: 10, depositPct: 10,
-    monthlyFrom: 710000, options: ["바워스앤윌킨스", "파일럿 어시스트", "에어 서스펜션"],
+    contract: "장기렌트", availDate: "2026-09-10", termMonths: 60,
+    prepayPct: 10, depositPct: 10, monthlyFrom: 710000,
+    options: "바워스앤윌킨스, 파일럿 어시스트, 에어 서스펜션",
     note: "9월 초 입항 예정 물량.",
+    photo: "", sortOrder: 95,
   },
   {
-    id: "ST-2608-008", status: "판매중", brand: "포르쉐", model: "Macan", trim: "기본형",
+    id: -6, code: "ST-2608-008", status: "판매중", brand: "포르쉐", model: "Macan", trim: "기본형",
     year: 2026, colorExt: "화이트", colorInt: "블랙", mileageKm: 0,
-    contract: "리스", availDate: "2026-09-25", termMonths: 36, prepayPct: 30, depositPct: 0,
-    monthlyFrom: 1480000, options: ["스포츠 크로노", "파노라마 루프", "20인치 휠"],
+    contract: "리스", availDate: "2026-09-25", termMonths: 36,
+    prepayPct: 30, depositPct: 0, monthlyFrom: 1480000,
+    options: "스포츠 크로노, 파노라마 루프, 20인치 휠",
     note: "옵션 조합에 따라 조건이 크게 달라지는 차종입니다.",
+    photo: "", sortOrder: 94,
   },
   {
-    id: "ST-2608-007", status: "계약완료", brand: "기아", model: "카니발", trim: "하이리무진",
+    id: -7, code: "ST-2608-007", status: "계약완료", brand: "기아", model: "카니발", trim: "하이리무진",
     year: 2026, colorExt: "그래비티 블루", colorInt: "네이비", mileageKm: 0,
-    contract: "장기렌트", availDate: "즉시", termMonths: 48, prepayPct: 0, depositPct: 20,
-    monthlyFrom: 880000, options: ["9인승", "듀얼 선루프", "후석 엔터테인먼트"],
+    contract: "장기렌트", availDate: "즉시", termMonths: 48,
+    prepayPct: 0, depositPct: 20, monthlyFrom: 880000,
+    options: "9인승, 듀얼 선루프, 후석 엔터테인먼트",
     note: "8월 25일 계약 완료. 동일 사양 재입고 시 알림 신청 가능합니다.",
+    photo: "", sortOrder: 93,
   },
   {
-    id: "ST-2608-006", status: "계약완료", brand: "현대", model: "그랜저", trim: "하이브리드 캘리그래피",
+    id: -8, code: "ST-2608-006", status: "계약완료", brand: "현대", model: "그랜저", trim: "하이브리드 캘리그래피",
     year: 2026, colorExt: "쉬머링 실버", colorInt: "블랙", mileageKm: 0,
-    contract: "리스 · 장기렌트", availDate: "즉시", termMonths: 60, prepayPct: 10, depositPct: 0,
-    monthlyFrom: 590000, options: ["빌트인캠", "파노라마 선루프", "20인치 휠"],
+    contract: "리스 · 장기렌트", availDate: "즉시", termMonths: 60,
+    prepayPct: 10, depositPct: 0, monthlyFrom: 590000,
+    options: "빌트인캠, 파노라마 선루프, 20인치 휠",
     note: "8월 21일 계약 완료.",
+    photo: "", sortOrder: 92,
   },
 ];
-
-export const BRANDS = Array.from(new Set(STOCK.map((s) => s.brand)));
