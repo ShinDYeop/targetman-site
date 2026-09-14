@@ -3,6 +3,13 @@ import { z } from "zod";
 
 import { bindings } from "../bindings.server";
 import { notifyOwner, formatNotification } from "./notify.server";
+import {
+  clean,
+  cleanMultiline,
+  guardSubmission,
+  purgeExpired,
+  recordSubmission,
+} from "./security.server";
 
 const ConsultInput = z.object({
   name: z.string().min(1).max(40),
@@ -11,11 +18,26 @@ const ConsultInput = z.object({
   memo: z.string().min(1).max(2000),
   src: z.string().max(80).default("consult"),
   marketingOptin: z.boolean().default(false),
+  hp: z.string().max(200).default(""),
+  elapsedMs: z.number().default(0),
 });
 
 export const submitConsult = createServerFn({ method: "POST" })
   .inputValidator(ConsultInput)
   .handler(async ({ data }) => {
+    const name = clean(data.name, 40);
+    const phone = clean(data.phone, 40);
+    const memo = cleanMultiline(data.memo, 2000);
+    const callWindow = clean(data.callWindow, 40);
+    if (!name || !memo) return { ok: false as const, reason: "invalid" };
+
+    const guard = await guardSubmission({
+      phone,
+      honeypot: data.hp,
+      elapsedMs: data.elapsedMs,
+    });
+    if (!guard.ok) return { ok: false as const, reason: guard.reason };
+
     const { DB } = bindings();
     if (!DB) return { ok: false as const, reason: "storage_unavailable" };
 
@@ -27,24 +49,21 @@ export const submitConsult = createServerFn({ method: "POST" })
     )
       .bind(
         new Date().toISOString(),
-        data.name,
-        data.phone,
-        data.callWindow,
-        data.memo,
-        data.src,
+        name,
+        phone,
+        callWindow,
+        memo,
+        clean(data.src, 80),
         data.marketingOptin ? 1 : 0,
       )
       .run();
 
+    await recordSubmission(phone);
+    await purgeExpired();
+
     await notifyOwner(
-      `[상담] ${data.name} 님 (${data.phone})`,
-      formatNotification({
-        kind: "상담",
-        name: data.name,
-        phone: data.phone,
-        callWindow: data.callWindow,
-        memo: data.memo,
-      }),
+      `[상담] ${name} 님 (${phone})`,
+      formatNotification({ kind: "상담", name, phone, callWindow, memo }),
     );
 
     return { ok: true as const };
