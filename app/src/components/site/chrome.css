@@ -1,0 +1,21 @@
+/*
+ * 휴대폰 하단 고정 바 보정.
+ * 1) 아이폰 홈 인디케이터에 버튼이 씹히지 않게 안전영역만큼 띄웁니다.
+ * 2) 호스팅 배지(오른쪽 아래 고정)가 바 위로 겹쳐서 "견적 요청" 버튼을
+ *    가리는 문제를 배지를 바 위쪽으로 올려서 해결합니다. 배지를 지우는 게
+ *    아니라 자리만 옮기는 것이라 둘 다 보입니다.
+ */
+@media (max-width: 900px) {
+  .t-bar {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .t-barpad {
+    height: calc(58px + env(safe-area-inset-bottom, 0px));
+  }
+
+  #hf-watermark,
+  a[aria-label="Made in Higgsfield"] {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

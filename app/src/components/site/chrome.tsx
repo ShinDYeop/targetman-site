@@ -1,3 +1,5 @@
+import "./chrome.css";
+
 import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
