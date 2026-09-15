@@ -43,6 +43,11 @@ function VideoCard({ v }: { v: Video }) {
           alt=""
           loading="lazy"
           onError={() => setSmall(true)}
+          onLoad={(e) => {
+            // 큰 판이 없는 영상이면 유튜브는 오류 대신 120px짜리 회색 그림을 내려줍니다.
+            // 그래서 폭을 보고 직접 작은 판으로 되돌립니다.
+            if (!small && e.currentTarget.naturalWidth <= 121) setSmall(true);
+          }}
         />
         <span className="t-vid-play" aria-hidden="true">
           <svg viewBox="0 0 28 20" focusable="false">
