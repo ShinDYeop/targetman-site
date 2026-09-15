@@ -87,7 +87,12 @@ function Reviews() {
 
           <div className="t-grid3">
             {list.map((r) => (
-              <ReviewCard key={r.no} r={r} />
+              <ReviewCard
+                key={r.id}
+                r={r}
+                comments={data.comments.filter((c) => c.reviewId === r.id)}
+                allowComment={!data.reviewsAreSample}
+              />
             ))}
           </div>
 

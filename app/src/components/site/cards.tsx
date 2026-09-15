@@ -2,9 +2,17 @@ import "./photos.css";
 
 import { useRef, useState } from "react";
 
+import { Comments } from "./comments";
 import { Plate } from "./chrome";
 import { kakaoLink } from "../../lib/site";
-import { photoList, photoUrl, type Estimate, type Review, type StockItem } from "../../lib/content";
+import {
+  photoList,
+  photoUrl,
+  type Comment,
+  type Estimate,
+  type Review,
+  type StockItem,
+} from "../../lib/content";
 
 /**
  * 사진 한 장이면 그대로, 여러 장이면 옆으로 미는 스트립으로 보여줍니다.
@@ -114,7 +122,15 @@ export function PhotoFrame({
   );
 }
 
-export function ReviewCard({ r }: { r: Review }) {
+export function ReviewCard({
+  r,
+  comments,
+  allowComment,
+}: {
+  r: Review;
+  comments?: Comment[];
+  allowComment?: boolean;
+}) {
   return (
     <article className="t-rev">
       <PhotoFrame
@@ -137,12 +153,7 @@ export function ReviewCard({ r }: { r: Review }) {
         </div>
         {r.quote ? <p className="t-rev-q">{r.quote}</p> : null}
         {r.customer ? <p className="t-rev-who">{r.customer}</p> : null}
-        {r.reply ? (
-          <div className="t-rev-reply">
-            <b>담당자 답글</b>
-            {r.reply}
-          </div>
-        ) : null}
+        {allowComment ? <Comments reviewId={r.id} items={comments ?? []} /> : null}
       </div>
     </article>
   );
