@@ -476,6 +476,205 @@ function Admin() {
         </section>
       ) : null}
 
+      {tab === "estimates" ? (
+        <section style={{ marginTop: 18 }}>
+          {editEstimate ? (
+            <form
+              className="t-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const res = await saveEstimate({ data: { password, ...editEstimate } });
+                if (res.ok) {
+                  setEditEstimate(null);
+                  flash("저장했습니다.");
+                  await refresh();
+                } else {
+                  flash("저장하지 못했습니다.");
+                }
+              }}
+            >
+              <h2 style={{ fontSize: 16, marginBottom: 12 }}>
+                {editEstimate.id > 0 ? "견적 수정" : "새 견적"}
+              </h2>
+              <MultiPhotoPicker
+                label="견적표 사진"
+                value={editEstimate.photo}
+                password={password}
+                onChange={(photo) => setEditEstimate({ ...editEstimate, photo })}
+                hint="카톡 견적표를 캡처해서 그대로 올리시면 됩니다. 올린 뒤 반드시 편집을 눌러 고객명과 연락처를 모자이크하세요."
+              />
+              <div className="t-fieldrow">
+                <Field label="브랜드">
+                  <input
+                    value={editEstimate.brand}
+                    placeholder="벤츠"
+                    onChange={(e) => setEditEstimate({ ...editEstimate, brand: e.target.value })}
+                  />
+                </Field>
+                <Field label="모델">
+                  <input
+                    value={editEstimate.model}
+                    placeholder="E250"
+                    onChange={(e) => setEditEstimate({ ...editEstimate, model: e.target.value })}
+                  />
+                </Field>
+              </div>
+              <Field label="트림 또는 사양">
+                <input
+                  value={editEstimate.trim}
+                  placeholder="AMG Line"
+                  onChange={(e) => setEditEstimate({ ...editEstimate, trim: e.target.value })}
+                />
+              </Field>
+              <div className="t-fieldrow">
+                <Field label="계약 형태">
+                  <select
+                    value={editEstimate.contract}
+                    onChange={(e) => setEditEstimate({ ...editEstimate, contract: e.target.value })}
+                  >
+                    <option>리스</option>
+                    <option>장기렌트</option>
+                  </select>
+                </Field>
+                <Field label="계약 기간(개월)">
+                  <input
+                    type="number"
+                    value={editEstimate.termMonths}
+                    onChange={(e) =>
+                      setEditEstimate({ ...editEstimate, termMonths: Number(e.target.value) })
+                    }
+                  />
+                </Field>
+              </div>
+              <div className="t-fieldrow">
+                <Field label="월 납입금(원)">
+                  <input
+                    type="number"
+                    value={editEstimate.monthlyFrom}
+                    onChange={(e) =>
+                      setEditEstimate({ ...editEstimate, monthlyFrom: Number(e.target.value) })
+                    }
+                  />
+                </Field>
+                <Field label="산출일">
+                  <input
+                    value={editEstimate.quotedAt}
+                    placeholder="2026.09.15"
+                    onChange={(e) => setEditEstimate({ ...editEstimate, quotedAt: e.target.value })}
+                  />
+                </Field>
+              </div>
+              <Field label="설명 (조건과 주의사항)">
+                <textarea
+                  rows={8}
+                  value={editEstimate.body}
+                  onChange={(e) => setEditEstimate({ ...editEstimate, body: e.target.value })}
+                />
+              </Field>
+              <p className="t-small" style={{ marginBottom: 12 }}>
+                줄바꿈은 그대로 나옵니다. 어떤 조건에서 뽑은 금액인지, 조건을 바꾸면 얼마가
+                되는지까지 적어 두시면 카톡 문의가 눈에 띄게 줄어듭니다.
+              </p>
+              <Field label="정렬 순서 (클수록 위)">
+                <input
+                  type="number"
+                  value={editEstimate.sortOrder}
+                  onChange={(e) =>
+                    setEditEstimate({ ...editEstimate, sortOrder: Number(e.target.value) })
+                  }
+                />
+              </Field>
+              <div className="t-consent">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editEstimate.published === 1}
+                    onChange={(e) =>
+                      setEditEstimate({ ...editEstimate, published: e.target.checked ? 1 : 0 })
+                    }
+                  />
+                  <span>
+                    <b>사이트에 공개</b> 사진에서 고객명과 연락처를 가렸는지 먼저 확인하세요.
+                  </span>
+                </label>
+              </div>
+              <button className="t-cta-submit" type="submit">저장</button>
+              <button
+                type="button"
+                className="t-cta-text"
+                style={{ marginTop: 10 }}
+                onClick={() => setEditEstimate(null)}
+              >
+                취소
+              </button>
+            </form>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="t-cta-plate"
+                onClick={() =>
+                  setEditEstimate({
+                    id: 0,
+                    ...EMPTY_ESTIMATE,
+                    sortOrder: (estimates[0]?.sortOrder ?? 0) + 10,
+                  })
+                }
+              >
+                새 견적 등록
+              </button>
+              <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                {estimates.map((e) => (
+                  <div className="t-card" key={e.id}>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                      <strong style={{ fontSize: 14.5 }}>
+                        {e.brand} {e.model}
+                      </strong>
+                      <span className="t-rev-meta">
+                        {[e.contract, e.termMonths ? `${e.termMonths}개월` : "", e.quotedAt]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                      {e.published ? null : (
+                        <span className="t-badge" data-k="done">비공개</span>
+                      )}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+                        <button
+                          type="button"
+                          className="t-cta-text"
+                          onClick={() => setEditEstimate(e)}
+                        >
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          className="t-cta-text"
+                          style={{ color: "var(--t-notice)" }}
+                          onClick={async () => {
+                            if (!window.confirm("이 견적을 지울까요? 되돌릴 수 없습니다.")) return;
+                            await deleteRow({ data: { password, table: "estimates", id: e.id } });
+                            flash("삭제했습니다.");
+                            await refresh();
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {estimates.length === 0 ? (
+                  <p className="t-note">
+                    아직 등록한 견적이 없어 사이트에는 예시가 보입니다. 첫 건을 등록하면 예시는
+                    사라집니다.
+                  </p>
+                ) : null}
+              </div>
+            </>
+          )}
+        </section>
+      ) : null}
+
       {tab === "stock" ? (
         <section style={{ marginTop: 18 }}>
           <p className="t-note" style={{ marginBottom: 12 }}>
