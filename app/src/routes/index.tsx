@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Page, SecHead, Plate } from "../components/site/chrome";
-import { ReviewCard, StockCard } from "../components/site/cards";
+import { ReviewCard, EstimateCard } from "../components/site/cards";
 import { loadSiteContent } from "../lib/api/content.functions";
 import { SITE, kakaoLink } from "../lib/site";
 
@@ -22,11 +22,11 @@ function Home() {
   const data = Route.useLoaderData();
   const latest = data.reviews.slice(0, 3);
   const ledgerRows = data.reviews.slice(0, 6);
-  const stock = data.stock.filter((s) => s.status !== "계약완료").slice(0, 3);
+  const estimates = data.estimates.slice(0, 2);
 
   const sample = [
     data.reviewsAreSample ? "출고 후기" : "",
-    data.stockIsSample ? "재고 목록" : "",
+    data.estimatesAreSample ? "차량별 견적" : "",
   ]
     .filter(Boolean)
     .join("와 ");
@@ -43,11 +43,11 @@ function Home() {
           </h1>
           <p className="t-sub t-rise t-rise-3">
             출고 한 건마다 번호를 붙여 공개합니다. 몇 대를 인도했는지, 고객이 실제로 뭐라고
-            했는지, 지금 바로 받을 수 있는 차가 무엇인지 전부 이 페이지에 있습니다.
+            했는지, 어떤 차가 어떤 조건에서 얼마였는지 전부 이 페이지에 있습니다.
           </p>
           <div className="t-hero-actions">
-            <Link to="/stock" className="t-cta-plate">
-              이번 달 즉시출고 차량 보기
+            <Link to="/estimates" className="t-cta-plate">
+              차량별 견적 보기
             </Link>
             <a
               className="t-cta-text"
@@ -121,23 +121,23 @@ function Home() {
         <section className="t-sec">
           <SecHead
             ix="02"
-            title="즉시출고 가능한 재고"
+            title="차량별 견적"
             aside={
-              data.ledger.updatedAt ? (
-                <span className="t-small">{data.ledger.updatedAt} 기준</span>
-              ) : null
+              <Link to="/estimates" className="t-cta-text">
+                전체 보기 <i aria-hidden="true">&rsaquo;</i>
+              </Link>
             }
           />
           <p className="t-lede" style={{ marginBottom: 14 }}>
-            캐피탈에서 받은 자료를 주 2회 반영합니다. 계약이 완료된 차량은 지우지 않고 마감
-            표시로 남겨 둡니다.
+            실제로 뽑아 본 견적표를 원본 그대로 올립니다. 다만 그 금액은 그 조건에서만 나오는
+            금액입니다. 선납금 하나만 바뀌어도 월 납입금은 달라집니다.
           </p>
-          {stock.map((s) => (
-            <StockCard key={s.id} s={s} />
+          {estimates.map((e) => (
+            <EstimateCard key={e.id} e={e} />
           ))}
           <p style={{ marginTop: 16 }}>
-            <Link to="/stock" className="t-cta-text">
-              재고 전체 보기 <i aria-hidden="true">&rsaquo;</i>
+            <Link to="/estimates" className="t-cta-text">
+              견적 전체 보기 <i aria-hidden="true">&rsaquo;</i>
             </Link>
           </p>
         </section>
@@ -227,7 +227,7 @@ function Home() {
               <div className="t-eyebrow">YouTube</div>
               <h3 style={{ fontSize: 17, marginTop: 8 }}>영상으로 먼저 확인하세요</h3>
               <p className="t-lede" style={{ marginTop: 8 }}>
-                이 페이지의 후기와 재고에 나오는 차종은 대부분 채널에 영상이 있습니다. 글과
+                이 페이지의 후기와 견적에 나오는 차종은 대부분 채널에 영상이 있습니다. 글과
                 영상이 서로를 확인해 주는 구조입니다.
               </p>
               <p style={{ marginTop: 14 }}>
