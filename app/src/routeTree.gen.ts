@@ -13,6 +13,7 @@ import { Route as ApiUploadRouteImport } from './routes/api.upload'
 import { Route as ApiImgRouteImport } from './routes/api.img'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as StockRouteImport } from './routes/stock'
+import { Route as EstimatesRouteImport } from './routes/estimates'
 import { Route as ServiceRouteImport } from './routes/service'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as QuoteRouteImport } from './routes/quote'
@@ -40,6 +41,11 @@ const VideosRoute = VideosRouteImport.update({
 const StockRoute = StockRouteImport.update({
   id: '/stock',
   path: '/stock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstimatesRoute = EstimatesRouteImport.update({
+  id: '/estimates',
+  path: '/estimates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServiceRoute = ServiceRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/estimates': typeof EstimatesRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/estimates': typeof EstimatesRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/estimates': typeof EstimatesRoute
   '/quote': typeof QuoteRoute
   '/reviews': typeof ReviewsRoute
   '/service': typeof ServiceRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin'
+    | '/estimates'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin'
+    | '/estimates'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin'
+    | '/estimates'
     | '/quote'
     | '/reviews'
     | '/service'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  EstimatesRoute: typeof EstimatesRoute
   QuoteRoute: typeof QuoteRoute
   ReviewsRoute: typeof ReviewsRoute
   ServiceRoute: typeof ServiceRoute
@@ -214,6 +227,13 @@ declare module '@tanstack/react-router' {
       path: '/stock'
       fullPath: '/stock'
       preLoaderRoute: typeof StockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estimates': {
+      id: '/estimates'
+      path: '/estimates'
+      fullPath: '/estimates'
+      preLoaderRoute: typeof EstimatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/service': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  EstimatesRoute: EstimatesRoute,
   QuoteRoute: QuoteRoute,
   ReviewsRoute: ReviewsRoute,
   ServiceRoute: ServiceRoute,
