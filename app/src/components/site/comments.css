@@ -1,0 +1,132 @@
+/* 출고 후기에 달리는 고객 댓글 */
+.t-cm {
+  border-top: 1px solid var(--t-line);
+  margin-top: 14px;
+  padding-top: 12px;
+}
+.t-cm-hd {
+  font-family: var(--t-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-muted);
+  margin-bottom: 10px;
+}
+.t-cm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.t-cm-i {
+  background: var(--t-surface-2);
+  border-radius: var(--t-r-sm);
+  padding: 9px 11px;
+}
+.t-cm-who {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-bottom: 4px;
+}
+.t-cm-who b {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.t-cm-who span {
+  font-family: var(--t-mono);
+  font-size: 11px;
+  color: var(--t-muted);
+}
+.t-cm-body {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--t-ink-2);
+  white-space: pre-wrap;
+  margin: 0;
+}
+.t-cm-open {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--t-accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.t-cm-open:hover {
+  text-decoration: underline;
+}
+.t-cm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.t-cm-form input,
+.t-cm-form textarea {
+  font-family: var(--t-sans);
+  font-size: 14px;
+  color: var(--t-ink);
+  background: var(--t-paper);
+  border: 1px solid var(--t-line-2);
+  border-radius: var(--t-r-sm);
+  padding: 9px 11px;
+  width: 100%;
+}
+.t-cm-form textarea {
+  min-height: 74px;
+  resize: vertical;
+}
+.t-cm-form input:focus,
+.t-cm-form textarea:focus {
+  border-color: var(--t-accent);
+  outline: none;
+}
+.t-cm-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.t-cm-send {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--t-ink);
+  border: none;
+  border-radius: var(--t-r-sm);
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.t-cm-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.t-cm-cancel {
+  font-size: 12.5px;
+  color: var(--t-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.t-cm-note {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--t-muted);
+  margin: 0;
+}
+.t-cm-note[data-k="bad"] {
+  color: var(--t-notice);
+}
+.t-cm-note[data-k="good"] {
+  color: var(--t-good);
+  font-weight: 600;
+}
+.t-cm-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
