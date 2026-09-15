@@ -19,3 +19,8 @@
     bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
+
+/* 로고가 들어가면서 브랜드 줄은 가운데 정렬이 맞습니다. */
+.t-brand {
+  align-items: center;
+}

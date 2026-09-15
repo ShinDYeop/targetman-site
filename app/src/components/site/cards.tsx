@@ -1,5 +1,7 @@
 import "./photos.css";
 
+import { useRef, useState } from "react";
+
 import { Plate } from "./chrome";
 import { kakaoLink } from "../../lib/site";
 import { photoList, photoUrl, type Estimate, type Review, type StockItem } from "../../lib/content";
@@ -18,6 +20,25 @@ export function PhotoFrame({
   empty: string;
 }) {
   const keys = photoList(photos);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [idx, setIdx] = useState(0);
+
+  /** 지정한 장으로 부드럽게 넘깁니다. 손가락으로 미는 것과 같은 자리로 갑니다. */
+  function go(n: number) {
+    const el = trackRef.current;
+    if (!el) return;
+    const next = Math.max(0, Math.min(keys.length - 1, n));
+    el.scrollTo({ left: el.clientWidth * next, behavior: "smooth" });
+    setIdx(next);
+  }
+
+  /** 손가락으로 민 경우에도 몇 번째인지 따라갑니다. */
+  function onScroll() {
+    const el = trackRef.current;
+    if (!el) return;
+    const n = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
+    setIdx(Math.max(0, Math.min(keys.length - 1, n)));
+  }
 
   if (keys.length === 0) {
     if (!empty) return null;
@@ -42,16 +63,53 @@ export function PhotoFrame({
   }
 
   return (
-    <div className="t-photos">
-      {keys.map((k, i) => (
-        <div className="t-photos-i" key={`${k}-${i}`}>
-          <img src={photoUrl(k)} alt={`${alt} ${i + 1}`} loading="lazy" />
-          {i === 0 ? <span className="t-photos-hint">옆으로 밀어 보세요</span> : null}
-          <span className="t-photos-n">
-            {i + 1} / {keys.length}
-          </span>
-        </div>
-      ))}
+    <div className="t-ph">
+      <div className="t-photos" ref={trackRef} onScroll={onScroll}>
+        {keys.map((k, i) => (
+          <div className="t-photos-i" key={`${k}-${i}`}>
+            <img src={photoUrl(k)} alt={`${alt} ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} />
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        className="t-ph-nav"
+        data-d="prev"
+        onClick={() => go(idx - 1)}
+        disabled={idx === 0}
+        aria-label="이전 사진"
+      >
+        &#8249;
+      </button>
+      <button
+        type="button"
+        className="t-ph-nav"
+        data-d="next"
+        onClick={() => go(idx + 1)}
+        disabled={idx === keys.length - 1}
+        aria-label="다음 사진"
+      >
+        &#8250;
+      </button>
+
+      <div className="t-ph-dots">
+        {keys.map((k, i) => (
+          <button
+            type="button"
+            key={`dot-${k}-${i}`}
+            className="t-ph-dot"
+            data-on={i === idx ? "1" : undefined}
+            onClick={() => go(i)}
+            aria-label={`${i + 1}번째 사진 보기`}
+            aria-current={i === idx ? "true" : undefined}
+          />
+        ))}
+      </div>
+
+      <span className="t-photos-n">
+        {idx + 1} / {keys.length}
+      </span>
     </div>
   );
 }

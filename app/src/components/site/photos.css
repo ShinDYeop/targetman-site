@@ -1,7 +1,11 @@
-/* 여러 장 사진 스트립. 가로로 밀어서 넘겨 보고, 몇 번째인지 항상 보이게 합니다. */
+/* 여러 장 사진. 휴대폰에서는 손가락으로 밀고, 마우스에서는 화살표로 넘깁니다. */
+.t-ph {
+  position: relative;
+}
+
 .t-photos {
   display: flex;
-  gap: 4px;
+  gap: 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   background: var(--t-surface-2);
@@ -25,10 +29,13 @@
   object-fit: cover;
   display: block;
 }
+
+/* 몇 번째 장인지 */
 .t-photos-n {
   position: absolute;
   right: 8px;
   bottom: 8px;
+  z-index: 2;
   font-family: var(--t-mono);
   font-size: 11px;
   font-weight: 600;
@@ -38,16 +45,73 @@
   background: rgba(11, 16, 32, 0.68);
   color: #fff;
 }
-.t-photos-hint {
+
+/* 좌우 화살표 — 마우스 쓰는 기기에서만 나옵니다. 손가락은 밀면 되니까요. */
+.t-ph-nav {
+  display: none;
   position: absolute;
-  left: 8px;
-  bottom: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 7px;
-  border-radius: 6px;
-  background: rgba(11, 16, 32, 0.68);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(11, 16, 32, 0.55);
   color: #fff;
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+  place-items: center;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.t-ph-nav[data-d="prev"] {
+  left: 8px;
+}
+.t-ph-nav[data-d="next"] {
+  right: 8px;
+}
+.t-ph-nav:hover:not(:disabled) {
+  background: rgba(11, 16, 32, 0.85);
+}
+.t-ph-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .t-ph-nav {
+    display: grid;
+  }
+}
+
+/* 아래 점 — 몇 장인지, 지금 어디인지 한눈에. 눌러도 넘어갑니다. */
+.t-ph-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  pointer-events: none;
+}
+.t-ph-dot {
+  pointer-events: auto;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 1px rgba(11, 16, 32, 0.35);
+  transition: width 0.15s ease, background 0.15s ease;
+}
+.t-ph-dot[data-on="1"] {
+  width: 18px;
+  background: #fff;
 }
 
 /* 차량별 견적 카드 */

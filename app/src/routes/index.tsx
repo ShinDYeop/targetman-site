@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Page, SecHead, Plate } from "../components/site/chrome";
+import { Page, SecHead, BrandMark } from "../components/site/chrome";
 import { ReviewCard, EstimateCard } from "../components/site/cards";
 import { loadSiteContent } from "../lib/api/content.functions";
 import { SITE, kakaoLink } from "../lib/site";
@@ -211,7 +211,7 @@ function Home() {
           <SecHead ix="05" title="담당자" />
           <div className="t-grid2">
             <div className="t-card">
-              <Plate no="TM" size="lg" />
+              <BrandMark size={64} />
               <h3 style={{ fontSize: 18, marginTop: 10 }}>{SITE.brand}</h3>
               <p className="t-lede" style={{ marginTop: 8 }}>
                 유튜브 채널에서 차량 리뷰와 리스 장기렌트 조건을 설명하는 사람과 실제 계약을

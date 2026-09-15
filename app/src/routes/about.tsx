@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Page, SecHead, Plate } from "../components/site/chrome";
+import { Page, SecHead, BrandMark } from "../components/site/chrome";
 import { loadSiteContent } from "../lib/api/content.functions";
 import { SITE, kakaoLink } from "../lib/site";
 
@@ -38,7 +38,7 @@ function About() {
         <section className="t-sec">
           <div className="t-grid2">
             <div className="t-card">
-              <Plate no="TM" size="lg" />
+              <BrandMark size={64} />
               <h3 style={{ fontSize: 24, marginTop: 16 }}>{SITE.brand}</h3>
               <p className="t-small" style={{ marginTop: 6 }}>
                 {SITE.tagline} 상담 및 출고 담당

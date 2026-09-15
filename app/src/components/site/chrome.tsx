@@ -5,6 +5,19 @@ import type { ReactNode } from "react";
 
 import { SITE, NAV, kakaoLink } from "../../lib/site";
 
+/** 브랜드 마크. 사장님 로고를 그대로 씁니다. */
+export function BrandMark({ size = 28 }: { size?: number }) {
+  return (
+    <img
+      src="/logo.png"
+      alt="타겟맨"
+      width={size}
+      height={size}
+      style={{ width: size, height: size, display: "block", flex: "none" }}
+    />
+  );
+}
+
 export function Plate({ no, size }: { no: number | string; size?: "lg" }) {
   return (
     <span className={size === "lg" ? "t-plate t-plate-lg" : "t-plate"}>
@@ -34,6 +47,7 @@ export function Header() {
     <header className="t-head">
       <div className="t-wrap">
         <Link to="/" className="t-brand">
+          <BrandMark size={30} />
           <span className="t-nm">{SITE.brand}</span>
           <span className="t-tg">{SITE.tagline}</span>
         </Link>
@@ -71,6 +85,9 @@ export function Footer() {
     <footer className="t-foot">
       <div className="t-wrap t-fg">
         <div>
+          <span style={{ display: "inline-block", marginBottom: 10 }}>
+            <BrandMark size={40} />
+          </span>
           <b>{SITE.brand}</b>
           {SITE.tagline} 상담 및 출고
           <br />
