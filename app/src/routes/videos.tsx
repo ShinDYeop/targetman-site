@@ -26,7 +26,6 @@ export const Route = createFileRoute("/videos")({
  * 큰 판(maxres)이 없는 영상도 있어서, 안 뜨면 작은 판으로 한 번 되돌립니다.
  */
 function VideoCard({ v }: { v: Video }) {
-  const [small, setSmall] = useState(false);
   if (!v.videoId) return null;
 
   return (
@@ -38,17 +37,7 @@ function VideoCard({ v }: { v: Video }) {
       aria-label={`${v.title || v.brand} 영상 보기 (유튜브에서 열림)`}
     >
       <span className="t-vid-th">
-        <img
-          src={youtubeThumb(v.videoId, !small)}
-          alt=""
-          loading="lazy"
-          onError={() => setSmall(true)}
-          onLoad={(e) => {
-            // 큰 판이 없는 영상이면 유튜브는 오류 대신 120px짜리 회색 그림을 내려줍니다.
-            // 그래서 폭을 보고 직접 작은 판으로 되돌립니다.
-            if (!small && e.currentTarget.naturalWidth <= 121) setSmall(true);
-          }}
-        />
+        <img src={youtubeThumb(v.videoId)} alt="" loading="lazy" />
         <span className="t-vid-play" aria-hidden="true">
           <svg viewBox="0 0 28 20" focusable="false">
             <rect width="28" height="20" rx="5" fill="#ff0000" />

@@ -198,9 +198,13 @@ export function youtubeId(input: string): string {
   return "";
 }
 
-/** 유튜브가 제공하는 썸네일 주소. 큰 판이 없는 영상도 있어 화면에서 작은 판으로 되돌립니다. */
-export function youtubeThumb(id: string, big = true): string {
-  return `https://i.ytimg.com/vi/${id}/${big ? "maxresdefault" : "hqdefault"}.jpg`;
+/**
+ * 유튜브 썸네일 주소.
+ * 고화질 판(maxresdefault)은 없는 영상이 많고, 없을 때 오류 대신 회색 그림을 내려주기 때문에
+ * 어떤 영상에나 반드시 있는 hqdefault 를 씁니다. 화면에서는 16:9로 잘라 넣습니다.
+ */
+export function youtubeThumb(id: string): string {
+  return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 }
 
 export function youtubeWatch(id: string): string {

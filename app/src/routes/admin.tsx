@@ -770,7 +770,7 @@ function Admin() {
                   <div style={{ marginBottom: 14 }}>
                     <div className="t-small" style={{ marginBottom: 6 }}>썸네일 미리보기</div>
                     <img
-                      src={youtubeThumb(vid, false)}
+                      src={youtubeThumb(vid)}
                       alt="유튜브 썸네일 미리보기"
                       style={{
                         width: 220,
@@ -874,7 +874,7 @@ function Admin() {
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                       {v.videoId ? (
                         <img
-                          src={youtubeThumb(v.videoId, false)}
+                          src={youtubeThumb(v.videoId)}
                           alt=""
                           style={{
                             width: 86,
