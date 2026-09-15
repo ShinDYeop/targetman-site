@@ -8,8 +8,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "김○○ 대표님",
     quote:
       "다른 데서 견적 다섯 군데 받아봤는데 조건 설명을 끝까지 해준 데가 여기 하나였습니다. 출고까지 3주 걸린 건 좀 길었지만 그 사이에 진행 상황을 계속 알려줘서 답답하진 않았어요.",
-    reply:
-      "3주 대기 양해해 주셔서 감사합니다. 해당 트림이 본사 물량 배정이 늦어지는 시기였습니다. 다음 만기 6개월 전에 다시 연락드리겠습니다.",
     photo: "", published: 1,
   },
   {
@@ -18,8 +16,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "박○○ 님",
     quote:
       "영상 보고 연락했습니다. 실물이 영상이랑 똑같았고, 인수할 때 체크리스트 같이 보면서 확인한 게 좋았습니다.",
-    reply:
-      "인도 현장에서 같이 확인해 주셔서 저도 편했습니다. 첫 정기점검 시기 되면 알려드리겠습니다.",
     photo: "", published: 1,
   },
   {
@@ -28,8 +24,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "○○산업 법인",
     quote:
       "법인 명의 처리랑 서류를 대신 정리해 준 게 제일 컸습니다. 담당 세무사랑 직접 통화까지 해줘서 시간이 많이 절약됐어요.",
-    reply:
-      "세무 담당자분과 확인이 필요한 건이라 직접 통화드렸습니다. 잔여 서류는 보관 중이니 필요하시면 말씀 주세요.",
     photo: "", published: 1,
   },
   {
@@ -38,8 +32,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "이○○ 대표님",
     quote:
       "처음에 심사가 한 번 막혔는데 대안을 두 가지 정리해서 보내줬습니다. 그중 하나로 진행해서 결국 출고했습니다. 안 된다고만 하고 끝내는 데가 많은데 여기는 달랐습니다.",
-    reply:
-      "첫 심사 결과 나왔을 때 걱정 많으셨을 텐데 기다려 주셔서 감사합니다. 조건 변경 이력은 계약서와 함께 보관해 두었습니다.",
     photo: "", published: 1,
   },
   {
@@ -48,8 +40,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "최○○ 님",
     quote:
       "월 납입금만 싸게 보여주고 나중에 조건 붙이는 곳이 많던데, 여기는 선납이랑 보증금 조건을 처음부터 같이 적어줬습니다.",
-    reply:
-      "조건 없이 금액만 보여드리는 건 결국 서로 손해라 생각합니다. 만기 인수 여부는 24개월 지난 시점에 다시 상의드리겠습니다.",
     photo: "", published: 1,
   },
   {
@@ -58,8 +48,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "정○○ 님",
     quote:
       "아이 태우는 차라 안전 옵션 위주로 물어봤는데 트림별 차이를 표로 정리해서 보내줬습니다. 결정하는 데 하루면 충분했어요.",
-    reply:
-      "옵션 비교표는 계속 업데이트하고 있습니다. 필요하실 때 언제든 다시 요청해 주세요.",
     photo: "", published: 1,
   },
   {
@@ -68,8 +56,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "○○의료재단",
     quote:
       "차량 5대를 한 번에 진행했는데 인도 일정을 나눠서 잡아줘서 업무에 지장이 없었습니다.",
-    reply:
-      "5대 동시 인도는 현장이 복잡해져서 3회로 나눴습니다. 잔여 2대 만기도 함께 관리하겠습니다.",
     photo: "", published: 1,
   },
   {
@@ -78,8 +64,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "한○○ 대표님",
     quote:
       "중간에 제가 차종을 바꿨는데 짜증 한 번 안 내고 다시 견적을 뽑아줬습니다. 그게 기억에 남습니다.",
-    reply:
-      "고민하시는 게 당연한 금액입니다. 바꾸신 결정이 맞았다고 생각합니다.",
     photo: "", published: 1,
   },
   {
@@ -88,8 +72,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "오○○ 님",
     quote:
       "계약 전에 중도해지 위약금 구조를 먼저 설명해준 게 좋았습니다. 보통은 물어봐야 알려주잖아요.",
-    reply:
-      "가장 많이 분쟁이 생기는 항목이라 먼저 안내드리고 있습니다. 계약서 해당 조항 사진도 보관해 두었습니다.",
     photo: "", published: 1,
   },
   {
@@ -98,8 +80,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "서○○ 님",
     quote:
       "지방이라 직접 못 갈 줄 알았는데 탁송으로 집 앞까지 받았습니다. 서류도 다 비대면으로 됐고요.",
-    reply:
-      "탁송 일정은 기사님과 직접 조율했습니다. 다음에도 편하게 연락 주세요.",
     photo: "", published: 1,
   },
   {
@@ -108,8 +88,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "윤○○ 대표님",
     quote:
       "월 납입금이 다른 곳보다 크게 싸진 않았습니다. 대신 왜 그 금액인지 설명이 됐습니다. 저는 그게 더 중요했어요.",
-    reply:
-      "제가 만들 수 없는 조건은 만들 수 없다고 말씀드리는 게 맞다고 생각합니다. 솔직하게 봐주셔서 감사합니다.",
     photo: "", published: 1,
   },
   {
@@ -118,8 +96,6 @@ export const SAMPLE_REVIEWS: Review[] = [
     customer: "강○○ 님",
     quote:
       "인수 전에 차량 상태 사진을 20장 넘게 보내줬습니다. 실물 보고 놀랄 일이 없었습니다.",
-    reply:
-      "인도 전 촬영은 모든 건에 하고 있습니다. 원본은 계약 기간 동안 보관합니다.",
     photo: "", published: 1,
   },
 ];

@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { loadSiteContent } from '../lib/api/content.functions'
+
 const PAGES: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/reviews', priority: '0.9', changefreq: 'weekly' },
@@ -16,10 +18,27 @@ export const Route = createFileRoute('/sitemap.xml')({
       GET: async ({ request }) => {
         const origin = new URL(request.url).origin
         const today = new Date().toISOString().split('T')[0]
+
+        // 공개된 출고 후기는 각각 고유 주소가 있으니 사이트맵에도 그대로 싣습니다.
+        let reviewPages: Array<{ path: string; priority: string; changefreq: string }> = []
+        try {
+          const data = await loadSiteContent()
+          if (!data.reviewsAreSample) {
+            reviewPages = data.reviews.map((r) => ({
+              path: `/review/${r.id}`,
+              priority: '0.7',
+              changefreq: 'monthly',
+            }))
+          }
+        } catch {
+          reviewPages = []
+        }
+
+        const all = [...PAGES, ...reviewPages]
         const xml = [
           '<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-          ...PAGES.flatMap((p) => [
+          ...all.flatMap((p) => [
             '  <url>',
             `    <loc>${origin}${p.path}</loc>`,
             `    <lastmod>${today}</lastmod>`,

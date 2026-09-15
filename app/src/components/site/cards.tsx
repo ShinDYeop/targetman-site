@@ -1,14 +1,12 @@
 import "./photos.css";
 
+import { Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 
-import { Comments } from "./comments";
-import { Plate } from "./chrome";
 import { kakaoLink } from "../../lib/site";
 import {
   photoList,
   photoUrl,
-  type Comment,
   type Estimate,
   type Review,
   type StockItem,
@@ -124,27 +122,30 @@ export function PhotoFrame({
 
 export function ReviewCard({
   r,
-  comments,
-  allowComment,
+  commentCount = 0,
+  linked = false,
 }: {
   r: Review;
-  comments?: Comment[];
-  allowComment?: boolean;
+  commentCount?: number;
+  linked?: boolean;
 }) {
+  const car = `${r.brand} ${r.model}`;
+
   return (
-    <article className="t-rev">
-      <PhotoFrame
-        photos={r.photo}
-        alt={`${r.brand} ${r.model} 출고 사진`}
-        empty="고객 실사 사진 자리"
-      />
+    <article className="t-rev" data-linked={linked ? "1" : undefined}>
+      <PhotoFrame photos={r.photo} alt={`${car} 출고 사진`} empty="고객 실사 사진 자리" />
       <div className="t-rev-body">
         <div className="t-rev-top">
-          {r.no > 0 ? <Plate no={r.no} /> : null}
           <span className="t-rev-meta">{r.date}</span>
         </div>
         <div className="t-rev-car">
-          {r.brand} {r.model}
+          {linked ? (
+            <Link to="/review/$id" params={{ id: String(r.id) }} className="t-rev-a">
+              {car}
+            </Link>
+          ) : (
+            car
+          )}
         </div>
         <div className="t-rev-meta">
           {[r.contract, r.term ? `${r.term}개월` : "", r.owner, r.region]
@@ -153,7 +154,14 @@ export function ReviewCard({
         </div>
         {r.quote ? <p className="t-rev-q">{r.quote}</p> : null}
         {r.customer ? <p className="t-rev-who">{r.customer}</p> : null}
-        {allowComment ? <Comments reviewId={r.id} items={comments ?? []} /> : null}
+        {linked ? (
+          <div className="t-rev-more">
+            <span>댓글 {commentCount}</span>
+            <span className="t-rev-go">
+              자세히 보기 <i aria-hidden="true">&rsaquo;</i>
+            </span>
+          </div>
+        ) : null}
       </div>
     </article>
   );

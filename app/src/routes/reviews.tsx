@@ -90,8 +90,8 @@ function Reviews() {
               <ReviewCard
                 key={r.id}
                 r={r}
-                comments={data.comments.filter((c) => c.reviewId === r.id)}
-                allowComment={!data.reviewsAreSample}
+                linked={!data.reviewsAreSample}
+                commentCount={data.comments.filter((c) => c.reviewId === r.id).length}
               />
             ))}
           </div>
