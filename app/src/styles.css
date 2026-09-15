@@ -649,3 +649,41 @@ body.t-body {
 .t-est-go { font-size: 12.5px; font-weight: 700; color: var(--t-accent); letter-spacing: -0.01em; }
 .t-est-go i { font-style: normal; display: inline-block; transition: transform 160ms ease; }
 .t-est[data-linked]:hover .t-est-go i { transform: translateX(3px); }
+
+
+/* ── 심사 서류 목록 ────────────────────────────────────── */
+.t-docs { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.t-doc {
+  background: var(--t-surface); border: 1px solid var(--t-line);
+  border-radius: var(--t-r); padding: 16px 16px 18px;
+}
+.t-doc h3 {
+  font-size: 15px; font-weight: 800; letter-spacing: -0.03em; color: var(--t-ink);
+  padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--t-line);
+}
+.t-doc h3::before {
+  content: ""; display: inline-block; width: 14px; height: 2px; border-radius: 2px;
+  background: var(--t-accent); margin-right: 8px; vertical-align: middle;
+}
+.t-doc ol { margin: 0; padding: 0; list-style: none; counter-reset: doc; }
+.t-doc li {
+  counter-increment: doc; position: relative; padding-left: 26px;
+  font-size: 13.5px; line-height: 1.6; color: var(--t-ink); letter-spacing: -0.02em;
+}
+.t-doc li + li { margin-top: 10px; }
+.t-doc li::before {
+  content: counter(doc); position: absolute; left: 0; top: 1px;
+  width: 18px; height: 18px; border-radius: 999px;
+  background: var(--t-surface-2); border: 1px solid var(--t-line);
+  font-family: var(--t-mono); font-size: 10.5px; font-weight: 600; color: var(--t-muted);
+  display: grid; place-items: center;
+}
+.t-doc li em {
+  font-style: normal; font-size: 11px; font-weight: 700; color: var(--t-accent);
+  background: rgba(232, 90, 38, 0.09); border-radius: 5px; padding: 2px 6px;
+  margin-left: 5px; white-space: nowrap;
+}
+.t-doc-src {
+  display: block; margin-top: 3px; font-size: 11.5px; color: var(--t-muted); font-weight: 500;
+}
+@media (min-width: 680px) { .t-docs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; } }

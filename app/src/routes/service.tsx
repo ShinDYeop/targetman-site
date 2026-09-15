@@ -6,11 +6,11 @@ import { kakaoLink } from "../lib/site";
 export const Route = createFileRoute("/service")({
   head: () => ({
     meta: [
-      { title: "서비스 안내 · 타겟맨 신동엽" },
+      { title: "심사 서류 안내 · 타겟맨 신동엽" },
       {
         name: "description",
         content:
-          "리스와 장기렌트의 차이, 계약 절차, 필요 서류, 비용 항목을 숨기지 않고 전부 공개합니다.",
+          "리스 장기렌트 심사에 필요한 서류를 개인, 개인사업자, 법인으로 나눠 정리했습니다. 발급처와 준비 기준까지 함께 안내합니다.",
       },
     ],
   }),
@@ -21,51 +21,95 @@ export function Service() {
   return (
     <Page src="service">
       <div className="t-wrap">
-        <section className="t-sec" style={{ paddingTop: 48 }}>
-          <div className="t-eyebrow">Service</div>
-          <h1 style={{ fontSize: "clamp(28px,4vw,40px)", marginTop: 12, lineHeight: 1.3 }}>
-            숨기는 항목이 없는 것이 서비스입니다
+        <section className="t-sec" style={{ paddingTop: 44 }}>
+          <div className="t-eyebrow">Documents</div>
+          <h1 style={{ fontSize: "clamp(26px,3.8vw,38px)", marginTop: 12, lineHeight: 1.3 }}>
+            심사 서류 안내
           </h1>
-          <p className="t-lede t-col" style={{ marginTop: 18 }}>
-            리스와 장기렌트에서 분쟁이 생기는 지점은 대부분 정해져 있습니다. 중도해지 위약금,
-            주행거리 초과 정산, 만기 인수 조건, 사고 시 부담 범위. 계약 전에 이 네 가지를 먼저
-            설명드립니다.
-          </p>
         </section>
 
         <section className="t-sec">
           <SecHead ix="01" title="필요한 서류" />
-          <div className="t-tablewrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>명의</th>
-                  <th>기본 서류</th>
-                  <th>추가로 요청될 수 있는 서류</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="t-k">개인</td>
-                  <td>신분증, 자동차운전면허증</td>
-                  <td>재직증명서, 소득금액증명원, 건강보험 자격득실확인서</td>
-                </tr>
-                <tr>
-                  <td className="t-k">개인사업자</td>
-                  <td>신분증, 사업자등록증</td>
-                  <td>부가세과세표준증명원, 소득금액증명원, 사업장 임대차계약서</td>
-                </tr>
-                <tr>
-                  <td className="t-k">법인</td>
-                  <td>사업자등록증, 법인등기부등본, 인감증명서</td>
-                  <td>재무제표, 주주명부, 이사회 의사록</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="t-note" style={{ marginBottom: 18 }}>
+            <b>서류는 최근 1개월 이내 발급본</b>으로 준비 부탁드립니다.
           </div>
-          <p className="t-small" style={{ marginTop: 12 }}>
-            금융사와 심사 조건에 따라 요청 서류가 달라집니다. 필요한 것만 안내드리고, 미리
-            다 준비하실 필요는 없습니다.
+
+          <div className="t-docs">
+            <div className="t-doc">
+              <h3>개인</h3>
+              <ol>
+                <li>면허증</li>
+                <li>재직증명서</li>
+                <li>
+                  근로소득원천징수영수증 <em>최근 2년분</em>
+                  <span className="t-doc-src">홈택스 발급</span>
+                </li>
+                <li>
+                  건강보험 납부내역서
+                  <span className="t-doc-src">국민건강보험 발급</span>
+                </li>
+                <li>
+                  건강보험 자격 득실 확인서
+                  <span className="t-doc-src">국민건강보험 발급</span>
+                </li>
+                <li>
+                  주민등록등본
+                  <span className="t-doc-src">정부24 발급</span>
+                </li>
+              </ol>
+            </div>
+
+            <div className="t-doc">
+              <h3>개인사업자</h3>
+              <ol>
+                <li>사업자등록증</li>
+                <li>대표자 면허증</li>
+                <li>
+                  부가세과세표준증명원 <em>최근 2년분</em>
+                  <span className="t-doc-src">홈택스 발급</span>
+                </li>
+                <li>
+                  주민등록등본
+                  <span className="t-doc-src">정부24 발급</span>
+                </li>
+              </ol>
+            </div>
+
+            <div className="t-doc">
+              <h3>법인</h3>
+              <ol>
+                <li>법인 사업자등록증</li>
+                <li>대표자 운전면허증</li>
+                <li>법인 등기부 등본</li>
+                <li>
+                  재무제표 <em>최근 2년분</em>
+                </li>
+                <li>
+                  부가세과세표준증명원 <em>최근 2년분</em>
+                  <span className="t-doc-src">홈택스 발급</span>
+                </li>
+                <li>
+                  주주명부 <em>법인 인감 날인 필수</em>
+                </li>
+                <li>대표자 주민등록등본</li>
+              </ol>
+            </div>
+          </div>
+
+          <p className="t-small" style={{ marginTop: 14 }}>
+            금융사와 심사 조건에 따라 요청 서류가 달라질 수 있습니다. 위 목록이 기준이고,
+            추가로 필요한 서류가 생기면 그때 따로 말씀드립니다. 어떤 서류를 어디서 떼는지
+            모르시면 카톡으로 물어봐 주세요.
+          </p>
+          <p style={{ marginTop: 16 }}>
+            <a
+              className="t-cta-plate"
+              href={kakaoLink("service_docs")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              서류 준비 물어보기
+            </a>
           </p>
         </section>
 

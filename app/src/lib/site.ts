@@ -19,7 +19,7 @@ export const NAV = [
   { to: "/", label: "홈" },
   { to: "/reviews", label: "출고 후기" },
   { to: "/estimates", label: "차량별 견적" },
-  { to: "/service", label: "서비스 안내" },
+  { to: "/service", label: "심사 서류 안내" },
   { to: "/videos", label: "영상" },
   { to: "/about", label: "담당자" },
 ] as const;
