@@ -1,0 +1,91 @@
+/* 여러 장 사진 스트립. 가로로 밀어서 넘겨 보고, 몇 번째인지 항상 보이게 합니다. */
+.t-photos {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  background: var(--t-surface-2);
+  border-bottom: 1px solid var(--t-line);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.t-photos::-webkit-scrollbar {
+  height: 0;
+}
+.t-photos-i {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  aspect-ratio: 4 / 3;
+  background: #0b1020;
+}
+.t-photos-i img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.t-photos-n {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-family: var(--t-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: rgba(11, 16, 32, 0.68);
+  color: #fff;
+}
+.t-photos-hint {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: rgba(11, 16, 32, 0.68);
+  color: #fff;
+}
+
+/* 차량별 견적 카드 */
+.t-est {
+  border: 1px solid var(--t-line);
+  border-radius: var(--t-r);
+  background: var(--t-surface);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.t-est-body {
+  padding: 16px 16px 14px;
+}
+.t-est-top {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.t-est-car {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.t-est-trim {
+  font-size: 13px;
+  color: var(--t-muted);
+}
+.t-est-when {
+  margin-left: auto;
+  font-family: var(--t-mono);
+  font-size: 12px;
+  color: var(--t-muted);
+}
+.t-est-body p.t-est-text {
+  margin-top: 12px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--t-ink-2);
+}
