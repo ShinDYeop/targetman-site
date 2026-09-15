@@ -46,7 +46,7 @@ export function Header() {
   return (
     <header className="t-head">
       <div className="t-wrap">
-        <Link to="/" className="t-brand">
+        <Link to="/" className="t-brand" aria-label="홈으로" title="홈으로">
           <BrandMark size={30} />
           <span className="t-nm">{SITE.brand}</span>
           <span className="t-tg">{SITE.tagline}</span>

@@ -16,6 +16,7 @@ export const SITE = {
 } as const;
 
 export const NAV = [
+  { to: "/", label: "홈" },
   { to: "/reviews", label: "출고 후기" },
   { to: "/estimates", label: "차량별 견적" },
   { to: "/service", label: "서비스 안내" },

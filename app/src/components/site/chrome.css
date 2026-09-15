@@ -23,4 +23,21 @@
 /* 로고가 들어가면서 브랜드 줄은 가운데 정렬이 맞습니다. */
 .t-brand {
   align-items: center;
+  transition: opacity 0.15s ease;
+}
+
+/*
+ * 맨 위 상호는 홈으로 가는 링크입니다. 눌러도 되는 자리라는 티가 나야
+ * 실제로 누릅니다. 마우스에서는 색이 바뀌고, 손가락에서는 살짝 눌립니다.
+ */
+.t-brand:hover .t-nm {
+  color: var(--t-accent);
+}
+
+.t-brand:active {
+  opacity: 0.6;
+}
+
+.t-brand .t-nm {
+  transition: color 0.15s ease;
 }
