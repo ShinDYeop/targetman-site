@@ -8,7 +8,12 @@ const ALLOWED = new Map<string, string>([
   ["image/png", "png"],
   ["image/webp", "webp"],
 ]);
-const MAX_BYTES = 8 * 1024 * 1024;
+
+/**
+ * 사진은 D1에 그대로 넣습니다. 한 행이 지나치게 커지지 않도록 900KB에서 자릅니다.
+ * 브라우저가 올리기 전에 긴 변 1600px로 줄이기 때문에 실제로는 100~400KB로 들어옵니다.
+ */
+const MAX_BYTES = 900_000;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -35,11 +40,16 @@ export const Route = createFileRoute("/api/upload")({
         if (bytes.byteLength === 0) return json({ ok: false, reason: "empty" }, 400);
         if (bytes.byteLength > MAX_BYTES) return json({ ok: false, reason: "too_large" }, 413);
 
-        const { STORAGE } = bindings();
-        if (!STORAGE) return json({ ok: false, reason: "storage_unavailable" }, 500);
+        const { DB } = bindings();
+        if (!DB) return json({ ok: false, reason: "storage_unavailable" }, 500);
 
         const key = `img/${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
-        await STORAGE.put(key, bytes, { httpMetadata: { contentType: type } });
+        await DB.prepare(
+          "INSERT INTO photos (key, mime, bytes, size, created_at) VALUES (?, ?, ?, ?, ?)",
+        )
+          .bind(key, type, bytes, bytes.byteLength, new Date().toISOString())
+          .run();
+
         return json({ ok: true, key });
       },
     },

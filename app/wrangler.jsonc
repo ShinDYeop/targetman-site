@@ -26,14 +26,6 @@
       "database_name": "targetman-db",
       "database_id": "736691be-cd59-4950-9324-458438df9b0e"
     }
-  ],
-
-  // 업로드한 사진이 들어가는 저장소.
-  "r2_buckets": [
-    {
-      "binding": "STORAGE",
-      "bucket_name": "targetman-assets"
-    }
   ]
 
   // 비밀값(ADMIN_PASSWORD / OWNER_EMAIL / RESEND_API_KEY)은 여기 두지 않습니다.
