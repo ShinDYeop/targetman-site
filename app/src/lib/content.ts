@@ -10,7 +10,6 @@ export type Review = {
   owner: string;
   customer: string;
   quote: string;
-  reply: string;
   photo: string;
   published: number;
 };
@@ -57,6 +56,16 @@ export type Estimate = {
   sortOrder: number;
 };
 
+/** 고객이 후기에 남기는 공개 댓글. 이름은 화면에 나갈 때 가려집니다. */
+export type Comment = {
+  id: number;
+  reviewId: number;
+  name: string;
+  body: string;
+  createdAt: string;
+  approved: number;
+};
+
 export type Ledger = { total: number; thisMonth: number; updatedAt: string };
 
 export const EMPTY_REVIEW: Omit<Review, "id"> = {
@@ -70,7 +79,6 @@ export const EMPTY_REVIEW: Omit<Review, "id"> = {
   owner: "개인",
   customer: "",
   quote: "",
-  reply: "",
   photo: "",
   published: 1,
 };
@@ -132,4 +140,12 @@ export function photoUrl(photo: string): string {
   if (!photo) return "";
   if (photo.startsWith("http://") || photo.startsWith("https://")) return photo;
   return `/api/img?k=${encodeURIComponent(photo)}`;
+}
+
+/** 화면에 나가는 이름은 성만 남깁니다. 김동엽 → 김○○ */
+export function maskName(name: string): string {
+  const t = name.trim();
+  if (!t) return "";
+  if (t.length === 1) return `${t}○`;
+  return t[0] + "○".repeat(Math.min(t.length - 1, 4));
 }
