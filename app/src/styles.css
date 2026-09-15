@@ -611,3 +611,18 @@ body.t-body {
 @media (min-width: 860px) {
   .t-detail { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 22px; }
 }
+
+
+/* ── 유튜브로 바로가기 — 한눈에 들어오게 크게 ─────────────── */
+.t-cta-yt {
+  display: flex; width: 100%; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px 20px; border: none; border-radius: 12px;
+  background: #ff0000; color: #fff; text-decoration: none;
+  font-family: var(--t-sans); font-weight: 800; font-size: 16.5px; letter-spacing: -0.035em;
+  box-shadow: 0 6px 18px rgba(255, 0, 0, 0.2);
+  transition: background 160ms ease, transform 120ms ease, box-shadow 160ms ease;
+}
+.t-cta-yt svg { width: 26px; height: 19px; flex: none; display: block; }
+.t-cta-yt:hover { background: #d90000; transform: translateY(-1px); box-shadow: 0 9px 24px rgba(255, 0, 0, 0.26); }
+.t-cta-yt:active { transform: translateY(1px); box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2); }
+.t-cta-yt:focus-visible { outline: 3px solid rgba(255, 0, 0, 0.35); outline-offset: 2px; }

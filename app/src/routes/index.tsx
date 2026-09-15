@@ -14,8 +14,8 @@ const STEPS = [
   { n: "01", t: "상담", d: "원하시는 차종, 명의, 예산 범위를 확인합니다. 이 단계에서 서류는 필요 없습니다.", w: "당일" },
   { n: "02", t: "조건 확정", d: "계약기간, 선납금, 보증금, 주행거리를 조합해 실제 월 납입금을 확정합니다.", w: "1일" },
   { n: "03", t: "심사", d: "금융사 심사를 진행합니다. 거절될 수 있고, 그 경우 대안을 두 가지 이상 정리해 드립니다.", w: "1~3일" },
-  { n: "04", t: "계약", d: "계약서 조항을 항목별로 함께 확인합니다. 중도해지 위약금 구조를 먼저 설명드립니다.", w: "1일" },
-  { n: "05", t: "인도", d: "차량 상태를 촬영해 보내드리고, 인수 현장에서 체크리스트를 같이 확인합니다.", w: "차종별 상이" },
+  { n: "04", t: "계약", d: "계약서 조항을 항목별로 함께 확인합니다. 서면계약 또는 전자계약으로 진행합니다.", w: "1일" },
+  { n: "05", t: "인도", d: "차량 상태를 촬영해 보내드리고, 타겟맨 신동엽이 직접 출고 현장에서 차량 설명을 해드립니다.", w: "차종별 상이" },
 ];
 
 function Home() {
@@ -174,21 +174,19 @@ function Home() {
                   <td>렌터카사 보험 적용, 사고 시 할증 부담이 다름</td>
                 </tr>
                 <tr>
-                  <td className="t-k">초기 비용</td>
-                  <td>선납금 중심</td>
-                  <td>보증금 중심</td>
-                </tr>
-                <tr>
-                  <td className="t-k">자주 맞는 경우</td>
-                  <td>보험 경력을 이어가야 하는 개인, 법인 업무용</td>
-                  <td>초기 비용을 낮추고 관리를 맡기고 싶은 경우</td>
+                  <td className="t-k">타겟 대상</td>
+                  <td>보험 경력을 이어가야 하는 경우. 수입차는 리스가 유리합니다.</td>
+                  <td>
+                    자동차세, 보험료를 신경 쓰고 싶지 않은 경우. 국산차는 장기렌트가
+                    유리합니다.
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div className="t-note" style={{ marginTop: 14 }}>
             둘 중 무엇이 유리한지는 명의, 보험 경력, 주행거리, 만기 계획에 따라 완전히
-            달라집니다. 표만 보고 결정하지 마시고 한 번 물어보세요.
+            달라집니다. 타겟맨 신동엽에게 문의주세요.
           </div>
           <p style={{ marginTop: 14 }}>
             <a className="t-cta-text" href={kakaoLink("home_compare")} target="_blank" rel="noreferrer">
@@ -198,7 +196,7 @@ function Home() {
         </section>
 
         <section className="t-sec">
-          <SecHead ix="04" title="상담부터 인도까지" />
+          <SecHead ix="04" title="상담부터 인도까지 과정" />
           <div className="t-steps">
             {STEPS.map((s) => (
               <div key={s.n}>
@@ -229,15 +227,20 @@ function Home() {
             </div>
             <div className="t-card">
               <div className="t-eyebrow">YouTube</div>
-              <h3 style={{ fontSize: 17, marginTop: 8 }}>영상으로 먼저 확인하세요</h3>
+              <h3 style={{ fontSize: 18, marginTop: 8 }}>
+                타겟맨 신동엽의 영상을 확인해주세요
+              </h3>
               <p className="t-lede" style={{ marginTop: 8 }}>
-                이 페이지의 후기와 견적에 나오는 차종은 대부분 채널에 영상이 있습니다. 글과
-                영상이 서로를 확인해 주는 구조입니다.
+                생생한 차량 설명과 출고 리뷰까지 담겨 있습니다.
               </p>
-              <p style={{ marginTop: 14 }}>
-                <Link to="/videos" className="t-cta-text">
-                  차종별 영상 보기 <i aria-hidden="true">&rsaquo;</i>
-                </Link>
+              <p style={{ marginTop: 18 }}>
+                <a className="t-cta-yt" href={SITE.youtube} target="_blank" rel="noreferrer">
+                  <svg viewBox="0 0 28 20" aria-hidden="true" focusable="false">
+                    <rect width="28" height="20" rx="5" fill="#fff" />
+                    <path d="M11.4 5.8 18.6 10l-7.2 4.2V5.8Z" fill="#ff0000" />
+                  </svg>
+                  유튜브로 바로가기
+                </a>
               </p>
             </div>
           </div>
