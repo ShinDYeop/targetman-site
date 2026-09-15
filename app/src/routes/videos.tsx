@@ -97,8 +97,8 @@ function Videos() {
               >
                 지금 조건 물어보기
               </a>
-              <Link to="/stock" className="t-cta-text">
-                즉시출고 재고 보기 <i aria-hidden="true">&rsaquo;</i>
+              <Link to="/estimates" className="t-cta-text">
+                차량별 견적 보기 <i aria-hidden="true">&rsaquo;</i>
               </Link>
             </p>
           </div>
