@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { bindings } from "../bindings.server";
-import type { Estimate, Ledger, Review, StockItem } from "../content";
+import type { Comment, Estimate, Ledger, Review, StockItem } from "../content";
+import { maskName } from "../content";
 import { SAMPLE_REVIEWS } from "../../data/reviews";
 import { SAMPLE_STOCK } from "../../data/stock";
 import { SAMPLE_ESTIMATES } from "../../data/estimates";
@@ -12,8 +13,24 @@ import { clean, cleanMultiline } from "./security.server";
 type ReviewRow = {
   id: number; no: number; date: string; brand: string; model: string; contract: string;
   term: number; region: string; owner: string; customer: string; quote: string;
-  reply: string; photo: string; published: number;
+  photo: string; published: number;
 };
+
+type CommentRow = {
+  id: number; review_id: number; name: string; body: string;
+  approved: number; created_at: string;
+};
+
+function toComment(r: CommentRow, mask: boolean): Comment {
+  return {
+    id: r.id,
+    reviewId: r.review_id,
+    name: mask ? maskName(r.name) : r.name,
+    body: r.body,
+    createdAt: r.created_at,
+    approved: r.approved ?? 1,
+  };
+}
 
 type StockRow = {
   id: number; code: string; status: string; brand: string; model: string; trim: string;
@@ -73,13 +90,15 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
   const ledger = await readSettings();
   if (!DB) {
     return {
-      reviews: SAMPLE_REVIEWS, stock: SAMPLE_STOCK, estimates: SAMPLE_ESTIMATES, ledger,
+      reviews: SAMPLE_REVIEWS, stock: SAMPLE_STOCK, estimates: SAMPLE_ESTIMATES,
+      comments: [] as Comment[], ledger,
       reviewsAreSample: true, stockIsSample: true, estimatesAreSample: true,
     };
   }
   let reviews: Review[] = [];
   let stock: StockItem[] = [];
   let estimates: Estimate[] = [];
+  let comments: Comment[] = [];
   try {
     const r = await DB.prepare(
       "SELECT * FROM reviews WHERE published = 1 ORDER BY no DESC, id DESC LIMIT 300",
@@ -98,11 +117,18 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
     ).all<EstimateRow>();
     estimates = (e.results ?? []).map(toEstimate);
   } catch { /* 테이블이 아직 없으면 예시로 */ }
+  try {
+    const c = await DB.prepare(
+      "SELECT id, review_id, name, body, approved, created_at FROM comments WHERE approved = 1 ORDER BY id ASC LIMIT 500",
+    ).all<CommentRow>();
+    comments = (c.results ?? []).map((r) => toComment(r, true));
+  } catch { /* 댓글 표가 아직 없으면 비워 둡니다 */ }
 
   return {
     reviews: reviews.length ? reviews : SAMPLE_REVIEWS,
     stock: stock.length ? stock : SAMPLE_STOCK,
     estimates: estimates.length ? estimates : SAMPLE_ESTIMATES,
+    comments,
     ledger,
     reviewsAreSample: reviews.length === 0,
     stockIsSample: stock.length === 0,
@@ -127,8 +153,12 @@ export const adminLoad = createServerFn({ method: "POST" })
     const e = await DB.prepare(
       "SELECT * FROM estimates ORDER BY sort_order DESC, id DESC LIMIT 500",
     ).all<EstimateRow>();
+    const cm = await DB.prepare(
+      "SELECT id, review_id, name, body, approved, created_at FROM comments ORDER BY approved ASC, id DESC LIMIT 500",
+    ).all<CommentRow>();
     return {
       ok: true as const,
+      comments: (cm.results ?? []).map((r) => toComment(r, false)),
       reviews: (r.results ?? []) as Review[],
       stock: (s.results ?? []).map(toStock),
       estimates: (e.results ?? []).map(toEstimate),
@@ -148,7 +178,6 @@ const ReviewInput = Pw.extend({
   owner: z.string().max(20).default("개인"),
   customer: z.string().max(40).default(""),
   quote: z.string().max(2000).default(""),
-  reply: z.string().max(2000).default(""),
   photo: z.string().max(3000).default(""),
   published: z.number().default(1),
 });
@@ -165,21 +194,21 @@ export const saveReview = createServerFn({ method: "POST" })
       Math.max(0, Math.floor(data.no)), clean(data.date, 20), clean(data.brand, 30),
       clean(data.model, 60), clean(data.contract, 20), Math.max(0, Math.floor(data.term)),
       clean(data.region, 30), clean(data.owner, 20), clean(data.customer, 40),
-      cleanMultiline(data.quote, 2000), cleanMultiline(data.reply, 2000),
+      cleanMultiline(data.quote, 2000),
       clean(data.photo, 3000), data.published ? 1 : 0,
     ];
 
     if (data.id > 0) {
       await DB.prepare(
         `UPDATE reviews SET no=?, date=?, brand=?, model=?, contract=?, term=?, region=?,
-           owner=?, customer=?, quote=?, reply=?, photo=?, published=? WHERE id=?`,
+           owner=?, customer=?, quote=?, photo=?, published=? WHERE id=?`,
       ).bind(...v, data.id).run();
       return { ok: true as const, id: data.id };
     }
     const res = await DB.prepare(
       `INSERT INTO reviews (no, date, brand, model, contract, term, region, owner,
-         customer, quote, reply, photo, published, created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+         customer, quote, photo, published, created_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     ).bind(...v, new Date().toISOString()).run();
     return { ok: true as const, id: Number(res.meta?.last_row_id ?? 0) };
   });
@@ -293,7 +322,7 @@ export const saveEstimate = createServerFn({ method: "POST" })
 export const deleteRow = createServerFn({ method: "POST" })
   .inputValidator(
     Pw.extend({
-      table: z.enum(["reviews", "stock", "estimates", "quote_requests"]),
+      table: z.enum(["reviews", "stock", "estimates", "quote_requests", "comments"]),
       id: z.number(),
     }),
   )
@@ -307,6 +336,7 @@ export const deleteRow = createServerFn({ method: "POST" })
       stock: "DELETE FROM stock WHERE id = ?",
       estimates: "DELETE FROM estimates WHERE id = ?",
       quote_requests: "DELETE FROM quote_requests WHERE id = ?",
+      comments: "DELETE FROM comments WHERE id = ?",
     } as const;
     const sql = TABLES[data.table];
     await DB.prepare(sql).bind(Math.floor(data.id)).run();
@@ -330,5 +360,19 @@ export const saveLedger = createServerFn({ method: "POST" })
         "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
       ).bind(k, val).run();
     }
+    return { ok: true as const };
+  });
+
+/** 댓글을 사이트에 올리거나 다시 내립니다. */
+export const approveComment = createServerFn({ method: "POST" })
+  .inputValidator(Pw.extend({ id: z.number(), approved: z.number() }))
+  .handler(async ({ data }) => {
+    const auth = await requireAdmin(data.password);
+    if (!auth.ok) return { ok: false as const, reason: auth.reason };
+    const { DB } = bindings();
+    if (!DB) return { ok: false as const, reason: "storage_unavailable" };
+    await DB.prepare("UPDATE comments SET approved = ? WHERE id = ?")
+      .bind(data.approved ? 1 : 0, Math.floor(data.id))
+      .run();
     return { ok: true as const };
   });
