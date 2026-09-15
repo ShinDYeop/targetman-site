@@ -38,6 +38,25 @@ export type StockItem = {
   sortOrder: number;
 };
 
+/**
+ * 차량별 견적. 견적표 사진 여러 장과 자유 설명 글이 본체이고,
+ * 차종과 월 납입금만 따로 받아서 목록에서 고르고 정렬할 수 있게 합니다.
+ */
+export type Estimate = {
+  id: number;
+  brand: string;
+  model: string;
+  trim: string;
+  contract: string;
+  termMonths: number;
+  monthlyFrom: number;
+  quotedAt: string;
+  body: string;
+  photo: string;
+  published: number;
+  sortOrder: number;
+};
+
 export type Ledger = { total: number; thisMonth: number; updatedAt: string };
 
 export const EMPTY_REVIEW: Omit<Review, "id"> = {
@@ -77,6 +96,36 @@ export const EMPTY_STOCK: Omit<StockItem, "id"> = {
   photo: "",
   sortOrder: 0,
 };
+
+export const EMPTY_ESTIMATE: Omit<Estimate, "id"> = {
+  brand: "",
+  model: "",
+  trim: "",
+  contract: "리스",
+  termMonths: 48,
+  monthlyFrom: 0,
+  quotedAt: "",
+  body: "",
+  photo: "",
+  published: 1,
+  sortOrder: 0,
+};
+
+/**
+ * 사진은 한 칸에 쉼표로 이어 붙여 저장합니다. 키에는 쉼표가 들어가지 않으므로
+ * 표 구조를 바꾸지 않고도 여러 장을 담을 수 있습니다.
+ */
+export function photoList(photos: string): string[] {
+  if (!photos) return [];
+  return photos
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+export function photoJoin(list: string[]): string {
+  return list.filter(Boolean).join(",");
+}
 
 /** R2에 저장된 사진 키를 화면에서 쓸 주소로 바꿉니다. */
 export function photoUrl(photo: string): string {

@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 const PAGES: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/reviews', priority: '0.9', changefreq: 'weekly' },
-  { path: '/stock', priority: '0.9', changefreq: 'daily' },
+  { path: '/estimates', priority: '0.9', changefreq: 'weekly' },
   { path: '/service', priority: '0.7', changefreq: 'monthly' },
   { path: '/videos', priority: '0.6', changefreq: 'weekly' },
   { path: '/about', priority: '0.6', changefreq: 'monthly' },
