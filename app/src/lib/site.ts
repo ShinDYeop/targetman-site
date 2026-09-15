@@ -1,4 +1,9 @@
 export const SITE = {
+  /**
+   * 카톡·페이스북 링크 미리보기는 이미지 주소가 전체 주소여야 합니다.
+   * 나중에 직접 산 도메인을 붙이면 이 한 줄만 바꾸면 됩니다.
+   */
+  origin: "https://targetman.targetman777.workers.dev",
   brand: "타겟맨 신동엽",
   brandShort: "타겟맨",
   tagline: "리스 · 장기렌트",

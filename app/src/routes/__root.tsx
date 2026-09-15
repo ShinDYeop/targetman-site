@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportHiggsfieldError } from "../lib/higgsfield-error-reporting";
 import appMetaJson from "../app-meta.json";
+import { SITE } from "../lib/site";
 
 declare const __HF_DESIGN_INSPECTOR__: boolean;
 
@@ -51,10 +52,17 @@ function toOwnAssetUrl(value: string | null | undefined): string | null {
   }
 }
 
+/** 링크 미리보기용 전체 주소. 상대경로로 두면 카톡에서 이미지가 안 뜹니다. */
+function absolute(value: string | null): string | null {
+  if (!value) return null;
+  if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  return `${SITE.origin}${value.startsWith("/") ? "" : "/"}${value}`;
+}
+
 function buildHead(meta: AppMeta) {
   const title = meta.og_title ?? DEFAULT_TITLE;
   const description = meta.og_description ?? DEFAULT_DESCRIPTION;
-  const ogImage = toOwnAssetUrl(meta.og_image_url);
+  const ogImage = absolute(toOwnAssetUrl(meta.og_image_url));
   const favicon = toOwnAssetUrl(meta.favicon_url);
 
   return {
@@ -67,6 +75,9 @@ function buildHead(meta: AppMeta) {
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "ko_KR" },
+      { property: "og:url", content: SITE.origin },
+      { property: "og:site_name", content: SITE.brand },
+      { name: "theme-color", content: "#E85A26" },
       { name: "twitter:card", content: ogImage ? "summary_large_image" : "summary" },
       ...(ogImage
         ? [
@@ -79,7 +90,12 @@ function buildHead(meta: AppMeta) {
       { rel: "stylesheet", href: appCss },
       { rel: "stylesheet", href: PRETENDARD_HREF },
       { rel: "stylesheet", href: FONT_HREF },
-      ...(favicon ? [{ rel: "icon", href: favicon }] : []),
+      ...(favicon
+        ? [
+            { rel: "icon", href: favicon },
+            { rel: "apple-touch-icon", href: favicon },
+          ]
+        : []),
     ],
   };
 }
