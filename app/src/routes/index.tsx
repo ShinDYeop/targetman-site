@@ -37,9 +37,9 @@ function Home() {
         <section className="t-hero">
           <div className="t-eyebrow t-rise">리스 · 장기렌트 출고 대장</div>
           <h1 className="t-rise t-rise-2">
-            유튜브에서 보시던 그 사람이,
+            유튜브에서 보시던 타겟맨이,
             <br />
-            계약서 끝까지 직접 담당합니다.
+            출고 끝까지 직접 담당합니다.
           </h1>
           <p className="t-sub t-rise t-rise-3">
             출고 한 건마다 번호를 붙여 공개합니다. 몇 대를 인도했는지, 고객이 실제로 뭐라고

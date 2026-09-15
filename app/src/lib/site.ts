@@ -8,7 +8,7 @@ export const SITE = {
   brandShort: "타겟맨",
   tagline: "리스 · 장기렌트",
   youtube: "https://www.youtube.com/@targetman777",
-  kakao: "http://pf.kakao.com/_xgRExoK/chat",
+  kakao: "http://pf.kakao.com/_xnFmrX/chat",
   phone: "010-5113-0850",
   phoneTel: "01051130850",
   email: "ehdduq121@naver.com",
