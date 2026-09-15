@@ -1,13 +1,38 @@
+import "./photos.css";
+
 import { Plate } from "./chrome";
 import { kakaoLink } from "../../lib/site";
-import { photoUrl, type Review, type StockItem } from "../../lib/content";
+import { photoList, photoUrl, type Estimate, type Review, type StockItem } from "../../lib/content";
 
-function PhotoFrame({ src, alt, empty }: { src: string; alt: string; empty: string }) {
-  if (src) {
+/**
+ * 사진 한 장이면 그대로, 여러 장이면 옆으로 미는 스트립으로 보여줍니다.
+ * 몇 번째 장인지 항상 찍어 두어야 고객이 더 있다는 걸 압니다.
+ */
+export function PhotoFrame({
+  photos,
+  alt,
+  empty,
+}: {
+  photos: string;
+  alt: string;
+  empty: string;
+}) {
+  const keys = photoList(photos);
+
+  if (keys.length === 0) {
+    if (!empty) return null;
+    return (
+      <div className="t-rev-photo">
+        <span>{empty}</span>
+      </div>
+    );
+  }
+
+  if (keys.length === 1) {
     return (
       <div className="t-rev-photo" style={{ padding: 0 }}>
         <img
-          src={src}
+          src={photoUrl(keys[0])}
           alt={alt}
           loading="lazy"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -15,9 +40,18 @@ function PhotoFrame({ src, alt, empty }: { src: string; alt: string; empty: stri
       </div>
     );
   }
+
   return (
-    <div className="t-rev-photo">
-      <span>{empty}</span>
+    <div className="t-photos">
+      {keys.map((k, i) => (
+        <div className="t-photos-i" key={`${k}-${i}`}>
+          <img src={photoUrl(k)} alt={`${alt} ${i + 1}`} loading="lazy" />
+          {i === 0 ? <span className="t-photos-hint">옆으로 밀어 보세요</span> : null}
+          <span className="t-photos-n">
+            {i + 1} / {keys.length}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -26,7 +60,7 @@ export function ReviewCard({ r }: { r: Review }) {
   return (
     <article className="t-rev">
       <PhotoFrame
-        src={photoUrl(r.photo)}
+        photos={r.photo}
         alt={`${r.brand} ${r.model} 출고 사진`}
         empty="고객 실사 사진 자리"
       />
@@ -71,9 +105,7 @@ export function StockCard({ s }: { s: StockItem }) {
 
   return (
     <article className="t-stock" data-done={done ? "1" : undefined}>
-      {s.photo ? (
-        <PhotoFrame src={photoUrl(s.photo)} alt={`${s.brand} ${s.model}`} empty="" />
-      ) : null}
+      <PhotoFrame photos={s.photo} alt={`${s.brand} ${s.model}`} empty="" />
       <div>
         <div className="t-stock-body">
           <div className="t-stock-top">
@@ -143,6 +175,50 @@ export function StockCard({ s }: { s: StockItem }) {
           </a>
         )}
       </div>
+    </article>
+  );
+}
+
+export function EstimateCard({ e }: { e: Estimate }) {
+  return (
+    <article className="t-est">
+      <PhotoFrame
+        photos={e.photo}
+        alt={`${e.brand} ${e.model} 견적표`}
+        empty="견적표 사진 자리"
+      />
+      <div className="t-est-body">
+        <div className="t-est-top">
+          <span className="t-est-car">
+            {e.brand} {e.model}
+          </span>
+          {e.trim ? <span className="t-est-trim">{e.trim}</span> : null}
+          {e.quotedAt ? <span className="t-est-when">{e.quotedAt} 산출</span> : null}
+        </div>
+        <div className="t-rev-meta" style={{ marginTop: 6 }}>
+          {[e.contract, e.termMonths ? `${e.termMonths}개월` : ""].filter(Boolean).join(" · ")}
+        </div>
+
+        {e.monthlyFrom > 0 ? (
+          <div className="t-price" style={{ marginTop: 12 }}>
+            월 {won(e.monthlyFrom)}부터
+            <small>
+              아래 조건 기준입니다. 선납금, 보증금, 주행거리, 명의 중 하나만 바뀌어도 금액이
+              달라집니다. 이 숫자는 약속이 아니라 예시입니다.
+            </small>
+          </div>
+        ) : null}
+
+        {e.body ? <p className="t-est-text">{e.body}</p> : null}
+      </div>
+      <a
+        className="t-cta-ask"
+        href={kakaoLink(`estimate_${e.id}`)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span>내 조건으로 다시 뽑아보기</span>
+      </a>
     </article>
   );
 }
