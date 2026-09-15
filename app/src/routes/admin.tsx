@@ -10,16 +10,21 @@ import {
   saveLedger,
   saveReview,
   saveStock,
+  saveVideo,
 } from "../lib/api/content.functions";
 import {
   EMPTY_ESTIMATE,
   EMPTY_REVIEW,
   EMPTY_STOCK,
+  EMPTY_VIDEO,
+  youtubeId,
+  youtubeThumb,
   type Comment,
   type Estimate,
   type Ledger,
   type Review,
   type StockItem,
+  type Video,
 } from "../lib/content";
 import { MultiPhotoPicker } from "../components/admin/photos";
 
@@ -30,7 +35,7 @@ export const Route = createFileRoute("/admin")({
   component: Admin,
 });
 
-type Tab = "inbox" | "reviews" | "estimates" | "comments" | "stock" | "settings";
+type Tab = "inbox" | "reviews" | "estimates" | "videos" | "comments" | "stock" | "settings";
 
 function when(iso: string) {
   const d = new Date(iso);
@@ -67,11 +72,13 @@ function Admin() {
   const [stock, setStock] = useState<StockItem[]>([]);
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   const [ledger, setLedger] = useState<Ledger>({ total: 0, thisMonth: 0, updatedAt: "" });
 
   const [editReview, setEditReview] = useState<Review | null>(null);
   const [editStock, setEditStock] = useState<StockItem | null>(null);
   const [editEstimate, setEditEstimate] = useState<Estimate | null>(null);
+  const [editVideo, setEditVideo] = useState<Video | null>(null);
 
   async function loadAll(pw: string) {
     setState("loading");
@@ -89,6 +96,7 @@ function Admin() {
       setStock(content.stock);
       setEstimates(content.estimates);
       setComments(content.comments);
+      setVideos(content.videos);
       setLedger(content.ledger);
       setAuthed(true);
       setState("idle");
@@ -107,6 +115,7 @@ function Admin() {
     setEditReview(null);
     setEditStock(null);
     setEditEstimate(null);
+    setEditVideo(null);
     setMsg("");
   }
 
@@ -158,6 +167,7 @@ function Admin() {
     ["inbox", "접수함", rows.length],
     ["reviews", "후기", reviews.length],
     ["estimates", "차량별 견적", estimates.length],
+    ["videos", "영상", videos.length],
     ["comments", "댓글", comments.filter((c) => !c.approved).length],
     ["stock", "재고(숨김)", stock.length],
     ["settings", "설정", 0],
@@ -692,6 +702,227 @@ function Admin() {
                   <p className="t-note">
                     아직 등록한 견적이 없어 사이트에는 예시가 보입니다. 첫 건을 등록하면 예시는
                     사라집니다.
+                  </p>
+                ) : null}
+              </div>
+            </>
+          )}
+        </section>
+      ) : null}
+
+      {tab === "videos" ? (
+        <section style={{ marginTop: 18 }}>
+          {editVideo ? (
+            <form
+              className="t-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const res = await saveVideo({
+                  data: {
+                    password,
+                    id: editVideo.id,
+                    brand: editVideo.brand,
+                    title: editVideo.title,
+                    url: editVideo.url,
+                    note: editVideo.note,
+                    published: editVideo.published,
+                    sortOrder: editVideo.sortOrder,
+                  },
+                });
+                if (res.ok) {
+                  setEditVideo(null);
+                  flash("저장했습니다.");
+                  await refresh();
+                } else {
+                  flash("저장하지 못했습니다.");
+                }
+              }}
+            >
+              <h2 style={{ fontSize: 16, marginBottom: 12 }}>
+                {editVideo.id > 0 ? "영상 수정" : "새 영상"}
+              </h2>
+
+              <Field label="유튜브 주소">
+                <input
+                  value={editVideo.url}
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  onChange={(e) => setEditVideo({ ...editVideo, url: e.target.value })}
+                />
+              </Field>
+              <p className="t-small" style={{ marginBottom: 12 }}>
+                유튜브 앱에서 <b>공유 → 링크 복사</b>로 나온 주소를 그대로 붙여 넣으시면 됩니다.
+                일반 주소, youtu.be 짧은 주소, 쇼츠 주소 모두 됩니다. 썸네일은 유튜브에 올린
+                그대로 자동으로 나옵니다.
+              </p>
+
+              {(() => {
+                const vid = youtubeId(editVideo.url);
+                if (!editVideo.url.trim()) return null;
+                if (!vid) {
+                  return (
+                    <p className="t-note" style={{ marginBottom: 12 }}>
+                      유튜브 영상 주소로 보이지 않습니다. 주소를 다시 확인해 주세요. 이대로
+                      저장하면 사이트에 나오지 않습니다.
+                    </p>
+                  );
+                }
+                return (
+                  <div style={{ marginBottom: 14 }}>
+                    <div className="t-small" style={{ marginBottom: 6 }}>썸네일 미리보기</div>
+                    <img
+                      src={youtubeThumb(vid, false)}
+                      alt="유튜브 썸네일 미리보기"
+                      style={{
+                        width: 220,
+                        aspectRatio: "16 / 9",
+                        objectFit: "cover",
+                        borderRadius: 8,
+                        border: "1px solid var(--t-line)",
+                        display: "block",
+                      }}
+                    />
+                  </div>
+                );
+              })()}
+
+              <div className="t-fieldrow">
+                <Field label="브랜드">
+                  <input
+                    value={editVideo.brand}
+                    placeholder="제네시스"
+                    onChange={(e) => setEditVideo({ ...editVideo, brand: e.target.value })}
+                  />
+                </Field>
+                <Field label="정렬 순서 (클수록 위)">
+                  <input
+                    type="number"
+                    value={editVideo.sortOrder}
+                    onChange={(e) =>
+                      setEditVideo({ ...editVideo, sortOrder: Number(e.target.value) })
+                    }
+                  />
+                </Field>
+              </div>
+
+              <Field label="제목">
+                <input
+                  value={editVideo.title}
+                  placeholder="GV80 출고 리뷰"
+                  onChange={(e) => setEditVideo({ ...editVideo, title: e.target.value })}
+                />
+              </Field>
+              <p className="t-small" style={{ marginBottom: 12 }}>
+                비워 두면 브랜드 이름만 나옵니다. 영상 제목을 그대로 적어 두시는 게 좋습니다.
+              </p>
+
+              <Field label="한 줄 설명 (선택)">
+                <input
+                  value={editVideo.note}
+                  placeholder="실내 옵션과 장기렌트 조건까지 같이 설명한 영상입니다."
+                  onChange={(e) => setEditVideo({ ...editVideo, note: e.target.value })}
+                />
+              </Field>
+
+              <div className="t-consent">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editVideo.published === 1}
+                    onChange={(e) =>
+                      setEditVideo({ ...editVideo, published: e.target.checked ? 1 : 0 })
+                    }
+                  />
+                  <span>
+                    <b>사이트에 공개</b> 체크를 풀면 영상 탭에서 내려갑니다.
+                  </span>
+                </label>
+              </div>
+
+              <button className="t-cta-submit" type="submit">저장</button>
+              <button
+                type="button"
+                className="t-cta-text"
+                style={{ marginTop: 10 }}
+                onClick={() => setEditVideo(null)}
+              >
+                취소
+              </button>
+            </form>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="t-cta-plate"
+                onClick={() =>
+                  setEditVideo({
+                    id: 0,
+                    ...EMPTY_VIDEO,
+                    sortOrder: (videos[0]?.sortOrder ?? 0) + 10,
+                  })
+                }
+              >
+                새 영상 등록
+              </button>
+              <p className="t-small" style={{ marginTop: 10 }}>
+                영상 파일을 올리는 게 아니라 유튜브 주소만 걸어 두는 방식입니다. 유튜브에서
+                영상을 지우거나 비공개로 돌리면 여기서도 안 보이게 됩니다.
+              </p>
+
+              <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                {videos.map((v) => (
+                  <div className="t-card" key={v.id}>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                      {v.videoId ? (
+                        <img
+                          src={youtubeThumb(v.videoId, false)}
+                          alt=""
+                          style={{
+                            width: 86,
+                            aspectRatio: "16 / 9",
+                            objectFit: "cover",
+                            borderRadius: 6,
+                            border: "1px solid var(--t-line)",
+                            flex: "none",
+                          }}
+                        />
+                      ) : null}
+                      <span style={{ minWidth: 0 }}>
+                        <strong style={{ fontSize: 14.5, display: "block" }}>
+                          {v.title || "(제목 없음)"}
+                        </strong>
+                        <span className="t-rev-meta">
+                          {[v.brand, v.videoId ? "" : "주소 확인 필요"].filter(Boolean).join(" · ") ||
+                            "브랜드 미지정"}
+                        </span>
+                      </span>
+                      {v.published ? null : (
+                        <span className="t-badge" data-k="done">비공개</span>
+                      )}
+                      <span style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+                        <button type="button" className="t-cta-text" onClick={() => setEditVideo(v)}>
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          className="t-cta-text"
+                          style={{ color: "var(--t-notice)" }}
+                          onClick={async () => {
+                            if (!window.confirm("이 영상을 목록에서 지울까요? 유튜브 영상 자체는 그대로 있습니다.")) return;
+                            await deleteRow({ data: { password, table: "videos", id: v.id } });
+                            flash("삭제했습니다.");
+                            await refresh();
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {videos.length === 0 ? (
+                  <p className="t-note">
+                    아직 걸어 둔 영상이 없습니다. 영상 탭에는 유튜브 채널로 가는 버튼만
+                    보입니다. 첫 영상을 등록하면 브랜드별로 정리돼서 나옵니다.
                   </p>
                 ) : null}
               </div>

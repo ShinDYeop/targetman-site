@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { bindings } from "../bindings.server";
-import type { Comment, Estimate, Ledger, Review, StockItem } from "../content";
-import { maskName } from "../content";
+import type { Comment, Estimate, Ledger, Review, StockItem, Video } from "../content";
+import { maskName, youtubeId } from "../content";
 import { SAMPLE_REVIEWS } from "../../data/reviews";
 import { SAMPLE_STOCK } from "../../data/stock";
 import { SAMPLE_ESTIMATES } from "../../data/estimates";
@@ -63,6 +63,18 @@ function toEstimate(r: EstimateRow): Estimate {
   };
 }
 
+type VideoRow = {
+  id: number; brand: string; title: string; url: string; video_id: string;
+  note: string; published: number; sort_order: number;
+};
+
+function toVideo(r: VideoRow): Video {
+  return {
+    id: r.id, brand: r.brand, title: r.title, url: r.url, videoId: r.video_id,
+    note: r.note, published: r.published, sortOrder: r.sort_order,
+  };
+}
+
 const DEFAULT_LEDGER: Ledger = { total: 513, thisMonth: 12, updatedAt: "" };
 
 async function readSettings(): Promise<Ledger> {
@@ -91,7 +103,7 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
   if (!DB) {
     return {
       reviews: SAMPLE_REVIEWS, stock: SAMPLE_STOCK, estimates: SAMPLE_ESTIMATES,
-      comments: [] as Comment[], ledger,
+      comments: [] as Comment[], videos: [] as Video[], ledger,
       reviewsAreSample: true, stockIsSample: true, estimatesAreSample: true,
     };
   }
@@ -99,6 +111,7 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
   let stock: StockItem[] = [];
   let estimates: Estimate[] = [];
   let comments: Comment[] = [];
+  let videos: Video[] = [];
   try {
     const r = await DB.prepare(
       "SELECT * FROM reviews WHERE published = 1 ORDER BY no DESC, id DESC LIMIT 300",
@@ -124,11 +137,19 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
     comments = (c.results ?? []).map((r) => toComment(r, true));
   } catch { /* 댓글 표가 아직 없으면 비워 둡니다 */ }
 
+  try {
+    const v = await DB.prepare(
+      "SELECT * FROM videos WHERE published = 1 ORDER BY sort_order DESC, id DESC LIMIT 300",
+    ).all<VideoRow>();
+    videos = (v.results ?? []).map(toVideo);
+  } catch { /* 영상 표가 아직 없으면 비워 둡니다 */ }
+
   return {
     reviews: reviews.length ? reviews : SAMPLE_REVIEWS,
     stock: stock.length ? stock : SAMPLE_STOCK,
     estimates: estimates.length ? estimates : SAMPLE_ESTIMATES,
     comments,
+    videos,
     ledger,
     reviewsAreSample: reviews.length === 0,
     stockIsSample: stock.length === 0,
@@ -156,9 +177,13 @@ export const adminLoad = createServerFn({ method: "POST" })
     const cm = await DB.prepare(
       "SELECT id, review_id, name, body, approved, created_at FROM comments ORDER BY approved ASC, id DESC LIMIT 500",
     ).all<CommentRow>();
+    const vd = await DB.prepare(
+      "SELECT * FROM videos ORDER BY sort_order DESC, id DESC LIMIT 500",
+    ).all<VideoRow>();
     return {
       ok: true as const,
       comments: (cm.results ?? []).map((r) => toComment(r, false)),
+      videos: (vd.results ?? []).map(toVideo),
       reviews: (r.results ?? []) as Review[],
       stock: (s.results ?? []).map(toStock),
       estimates: (e.results ?? []).map(toEstimate),
@@ -319,10 +344,54 @@ export const saveEstimate = createServerFn({ method: "POST" })
     return { ok: true as const, id: Number(res.meta?.last_row_id ?? 0) };
   });
 
+const VideoInput = Pw.extend({
+  id: z.number().default(0),
+  brand: z.string().max(30).default(""),
+  title: z.string().max(120).default(""),
+  url: z.string().max(400).default(""),
+  note: z.string().max(400).default(""),
+  published: z.number().default(1),
+  sortOrder: z.number().default(0),
+});
+
+/**
+ * 영상 등록. 주소를 그대로 저장하되, 썸네일을 띄우려면 영상 아이디가 필요하므로
+ * 저장 시점에 한 번 뽑아서 같이 넣어 둡니다. 못 알아보는 주소면 아이디는 빈칸이 되고
+ * 관리자 목록에 "주소 확인 필요"로 표시됩니다.
+ */
+export const saveVideo = createServerFn({ method: "POST" })
+  .inputValidator(VideoInput)
+  .handler(async ({ data }) => {
+    const auth = await requireAdmin(data.password);
+    if (!auth.ok) return { ok: false as const, reason: auth.reason };
+    const { DB } = bindings();
+    if (!DB) return { ok: false as const, reason: "storage_unavailable" };
+
+    const url = clean(data.url, 400);
+    const v = [
+      clean(data.brand, 30), clean(data.title, 120), url, youtubeId(url),
+      clean(data.note, 400), data.published ? 1 : 0, Math.floor(data.sortOrder),
+    ];
+
+    if (data.id > 0) {
+      await DB.prepare(
+        `UPDATE videos SET brand=?, title=?, url=?, video_id=?, note=?, published=?,
+           sort_order=?, updated_at=? WHERE id=?`,
+      ).bind(...v, new Date().toISOString(), data.id).run();
+      return { ok: true as const, id: data.id };
+    }
+    const res = await DB.prepare(
+      `INSERT INTO videos (brand, title, url, video_id, note, published, sort_order,
+         created_at, updated_at)
+       VALUES (?,?,?,?,?,?,?,?,?)`,
+    ).bind(...v, new Date().toISOString(), new Date().toISOString()).run();
+    return { ok: true as const, id: Number(res.meta?.last_row_id ?? 0) };
+  });
+
 export const deleteRow = createServerFn({ method: "POST" })
   .inputValidator(
     Pw.extend({
-      table: z.enum(["reviews", "stock", "estimates", "quote_requests", "comments"]),
+      table: z.enum(["reviews", "stock", "estimates", "quote_requests", "comments", "videos"]),
       id: z.number(),
     }),
   )
@@ -337,6 +406,7 @@ export const deleteRow = createServerFn({ method: "POST" })
       estimates: "DELETE FROM estimates WHERE id = ?",
       quote_requests: "DELETE FROM quote_requests WHERE id = ?",
       comments: "DELETE FROM comments WHERE id = ?",
+      videos: "DELETE FROM videos WHERE id = ?",
     } as const;
     const sql = TABLES[data.table];
     await DB.prepare(sql).bind(Math.floor(data.id)).run();

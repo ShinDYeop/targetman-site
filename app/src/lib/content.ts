@@ -56,6 +56,21 @@ export type Estimate = {
   sortOrder: number;
 };
 
+/**
+ * 브랜드별 유튜브 영상. 주소만 넣어 두면 썸네일은 유튜브에서 그대로 불러옵니다.
+ * 영상 파일을 우리가 들고 있지 않으니 용량 걱정도 없습니다.
+ */
+export type Video = {
+  id: number;
+  brand: string;
+  title: string;
+  url: string;
+  videoId: string;
+  note: string;
+  published: number;
+  sortOrder: number;
+};
+
 /** 고객이 후기에 남기는 공개 댓글. 이름은 화면에 나갈 때 가려집니다. */
 export type Comment = {
   id: number;
@@ -81,6 +96,16 @@ export const EMPTY_REVIEW: Omit<Review, "id"> = {
   quote: "",
   photo: "",
   published: 1,
+};
+
+export const EMPTY_VIDEO: Omit<Video, "id"> = {
+  brand: "",
+  title: "",
+  url: "",
+  videoId: "",
+  note: "",
+  published: 1,
+  sortOrder: 0,
 };
 
 export const EMPTY_STOCK: Omit<StockItem, "id"> = {
@@ -148,4 +173,36 @@ export function maskName(name: string): string {
   if (!t) return "";
   if (t.length === 1) return `${t}○`;
   return t[0] + "○".repeat(Math.min(t.length - 1, 4));
+}
+
+/**
+ * 유튜브 주소에서 영상 아이디만 뽑습니다.
+ * 일반 주소, 공유(youtu.be) 주소, 쇼츠, 임베드, 라이브 주소를 모두 받습니다.
+ * 못 알아보면 빈 문자열을 돌려주고, 화면에서는 "주소를 다시 확인해 주세요"로 안내합니다.
+ */
+export function youtubeId(input: string): string {
+  const s = (input || "").trim();
+  if (!s) return "";
+  if (/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+  const pats = [
+    /[?&]v=([A-Za-z0-9_-]{11})/,
+    /youtu\.be\/([A-Za-z0-9_-]{11})/,
+    /\/shorts\/([A-Za-z0-9_-]{11})/,
+    /\/embed\/([A-Za-z0-9_-]{11})/,
+    /\/live\/([A-Za-z0-9_-]{11})/,
+  ];
+  for (const re of pats) {
+    const m = s.match(re);
+    if (m) return m[1];
+  }
+  return "";
+}
+
+/** 유튜브가 제공하는 썸네일 주소. 큰 판이 없는 영상도 있어 화면에서 작은 판으로 되돌립니다. */
+export function youtubeThumb(id: string, big = true): string {
+  return `https://i.ytimg.com/vi/${id}/${big ? "maxresdefault" : "hqdefault"}.jpg`;
+}
+
+export function youtubeWatch(id: string): string {
+  return `https://www.youtube.com/watch?v=${id}`;
 }

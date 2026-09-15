@@ -1,16 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 
 import { Page, SecHead } from "../components/site/chrome";
 import { loadSiteContent } from "../lib/api/content.functions";
+import { youtubeThumb, youtubeWatch, type Video } from "../lib/content";
 import { SITE, kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
     meta: [
-      { title: "차종별 영상 · 타겟맨 신동엽" },
+      { title: "브랜드별 영상 · 타겟맨 신동엽" },
       {
         name: "description",
-        content: "채널의 차량 리뷰와 조건 설명 영상을 차종별로 모아 둡니다. 후기와 영상이 서로를 확인해 줍니다.",
+        content:
+          "타겟맨 신동엽 채널의 차량 설명과 출고 리뷰 영상을 브랜드별로 모아 둡니다. 후기와 영상이 서로를 확인해 줍니다.",
       },
     ],
   }),
@@ -18,16 +21,59 @@ export const Route = createFileRoute("/videos")({
   component: Videos,
 });
 
+/**
+ * 영상 한 칸. 썸네일은 유튜브에 올린 그대로를 불러옵니다.
+ * 큰 판(maxres)이 없는 영상도 있어서, 안 뜨면 작은 판으로 한 번 되돌립니다.
+ */
+function VideoCard({ v }: { v: Video }) {
+  const [small, setSmall] = useState(false);
+  if (!v.videoId) return null;
+
+  return (
+    <a
+      className="t-vid"
+      href={youtubeWatch(v.videoId)}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`${v.title || v.brand} 영상 보기 (유튜브에서 열림)`}
+    >
+      <span className="t-vid-th">
+        <img
+          src={youtubeThumb(v.videoId, !small)}
+          alt=""
+          loading="lazy"
+          onError={() => setSmall(true)}
+        />
+        <span className="t-vid-play" aria-hidden="true">
+          <svg viewBox="0 0 28 20" focusable="false">
+            <rect width="28" height="20" rx="5" fill="#ff0000" />
+            <path d="M11.4 5.8 18.6 10l-7.2 4.2V5.8Z" fill="#fff" />
+          </svg>
+        </span>
+      </span>
+      <span className="t-vid-body">
+        {v.brand ? <span className="t-vid-brand">{v.brand}</span> : null}
+        <span className="t-vid-title">{v.title || v.brand || "영상 보기"}</span>
+        {v.note ? <span className="t-vid-note">{v.note}</span> : null}
+      </span>
+    </a>
+  );
+}
+
 function Videos() {
   const data = Route.useLoaderData();
-  const brands = Array.from(new Set(data.reviews.map((r) => r.brand)));
+  const videos = data.videos.filter((v) => v.videoId);
+  const [brand, setBrand] = useState("전체");
+
+  const brands = ["전체", ...Array.from(new Set(videos.map((v) => v.brand).filter(Boolean)))];
+  const list = videos.filter((v) => brand === "전체" || v.brand === brand);
 
   return (
     <Page src="videos">
       <div className="t-wrap">
         <section className="t-sec" style={{ paddingTop: 48 }}>
           <div className="t-eyebrow">Videos</div>
-          <h1 style={{ fontSize: "clamp(28px,4vw,40px)", marginTop: 12, lineHeight: 1.3 }}>
+          <h1 style={{ fontSize: "clamp(26px,4vw,40px)", marginTop: 12, lineHeight: 1.3 }}>
             글로 쓴 후기와 영상 속 사람이 같은 곳에 있습니다
           </h1>
           <p className="t-lede t-col" style={{ marginTop: 18 }}>
@@ -35,50 +81,58 @@ function Videos() {
             확인할 수 있습니다. 그래서 차종마다 후기와 영상을 나란히 둡니다.
           </p>
           <p style={{ marginTop: 24 }}>
-            <a className="t-cta-plate" href={SITE.youtube} target="_blank" rel="noreferrer">
+            <a className="t-cta-yt" href={SITE.youtube} target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 28 20" aria-hidden="true" focusable="false">
+                <rect width="28" height="20" rx="5" fill="#fff" />
+                <path d="M11.4 5.8 18.6 10l-7.2 4.2V5.8Z" fill="#ff0000" />
+              </svg>
               유튜브 채널 전체 보기
             </a>
           </p>
         </section>
 
         <section className="t-sec">
-          <SecHead ix="정리" title="브랜드별 영상" />
-          <p className="t-lede t-col" style={{ marginBottom: 24 }}>
-            아래 칸에 채널의 실제 영상을 연결할 자리입니다. 브랜드마다 대표 영상 2~3개를
-            걸어 두면 검색으로 들어온 사람이 바로 확인할 수 있습니다.
-          </p>
-          <div className="t-grid3">
-            {brands.map((b) => {
-              const count = data.reviews.filter((r) => r.brand === b).length;
-              return (
-                <div className="t-rev" key={b}>
-                  <div className="t-rev-photo">
-                    <span>
-                      {b} 영상 썸네일 자리
-                      <br />
-                      유튜브 링크 연결
-                    </span>
-                  </div>
-                  <div className="t-rev-body">
-                    <div className="t-rev-car">{b}</div>
-                    <p className="t-rev-q">
-                      이 브랜드로 {count}건의 출고 기록이 있습니다. 영상에서 설명한 조건과
-                      실제 계약 조건을 비교해 보실 수 있습니다.
-                    </p>
-                    <p style={{ marginTop: "auto" }}>
-                      <Link
-                        to="/reviews"
-                        className="t-cta-text"
-                        style={{ fontSize: 13.5 }}
-                      >
-                        {b} 출고 후기 보기 <i aria-hidden="true">&rsaquo;</i>
-                      </Link>
-                    </p>
-                  </div>
+          <SecHead ix="영상" title="브랜드별 영상" />
+
+          {videos.length === 0 ? (
+            <div className="t-note t-col">
+              아직 여기에 걸어 둔 영상이 없습니다. 채널에는 계속 올라가고 있으니 위의 유튜브
+              버튼으로 바로 확인해 주세요. 찾으시는 차종이 있으면 카톡으로 말씀해 주시면 해당
+              영상 링크를 보내드립니다.
+            </div>
+          ) : (
+            <>
+              {brands.length > 2 ? (
+                <div className="t-chips">
+                  {brands.map((b) => (
+                    <button
+                      key={b}
+                      type="button"
+                      className="t-chip"
+                      data-on={brand === b ? "1" : undefined}
+                      onClick={() => setBrand(b)}
+                    >
+                      {b}
+                    </button>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              ) : null}
+
+              <div className="t-vids">
+                {list.map((v) => (
+                  <VideoCard key={v.id} v={v} />
+                ))}
+              </div>
+
+              {list.length === 0 ? (
+                <p className="t-note">이 브랜드로 걸어 둔 영상이 아직 없습니다.</p>
+              ) : null}
+
+              <p className="t-small" style={{ marginTop: 16 }}>
+                썸네일과 제목은 유튜브에 올라간 그대로입니다. 누르면 유튜브에서 열립니다.
+              </p>
+            </>
+          )}
         </section>
 
         <section className="t-sec">
