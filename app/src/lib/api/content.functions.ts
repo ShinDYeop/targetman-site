@@ -2,9 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { bindings } from "../bindings.server";
-import type { Ledger, Review, StockItem } from "../content";
+import type { Estimate, Ledger, Review, StockItem } from "../content";
 import { SAMPLE_REVIEWS } from "../../data/reviews";
 import { SAMPLE_STOCK } from "../../data/stock";
+import { SAMPLE_ESTIMATES } from "../../data/estimates";
 import { requireAdmin } from "./auth.server";
 import { clean, cleanMultiline } from "./security.server";
 
@@ -28,6 +29,20 @@ function toStock(r: StockRow): StockItem {
     contract: r.contract, availDate: r.avail_date, termMonths: r.term_months,
     prepayPct: r.prepay_pct, depositPct: r.deposit_pct, monthlyFrom: r.monthly_from,
     options: r.options, note: r.note, photo: r.photo, sortOrder: r.sort_order,
+  };
+}
+
+type EstimateRow = {
+  id: number; brand: string; model: string; trim: string; contract: string;
+  term_months: number; monthly_from: number; quoted_at: string; body: string;
+  photo: string; published: number; sort_order: number;
+};
+
+function toEstimate(r: EstimateRow): Estimate {
+  return {
+    id: r.id, brand: r.brand, model: r.model, trim: r.trim, contract: r.contract,
+    termMonths: r.term_months, monthlyFrom: r.monthly_from, quotedAt: r.quoted_at,
+    body: r.body, photo: r.photo, published: r.published, sortOrder: r.sort_order,
   };
 }
 
@@ -58,12 +73,13 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
   const ledger = await readSettings();
   if (!DB) {
     return {
-      reviews: SAMPLE_REVIEWS, stock: SAMPLE_STOCK, ledger,
-      reviewsAreSample: true, stockIsSample: true,
+      reviews: SAMPLE_REVIEWS, stock: SAMPLE_STOCK, estimates: SAMPLE_ESTIMATES, ledger,
+      reviewsAreSample: true, stockIsSample: true, estimatesAreSample: true,
     };
   }
   let reviews: Review[] = [];
   let stock: StockItem[] = [];
+  let estimates: Estimate[] = [];
   try {
     const r = await DB.prepare(
       "SELECT * FROM reviews WHERE published = 1 ORDER BY no DESC, id DESC LIMIT 300",
@@ -76,13 +92,21 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
     ).all<StockRow>();
     stock = (s.results ?? []).map(toStock);
   } catch { /* 테이블이 아직 없으면 예시로 */ }
+  try {
+    const e = await DB.prepare(
+      "SELECT * FROM estimates WHERE published = 1 ORDER BY sort_order DESC, id DESC LIMIT 300",
+    ).all<EstimateRow>();
+    estimates = (e.results ?? []).map(toEstimate);
+  } catch { /* 테이블이 아직 없으면 예시로 */ }
 
   return {
     reviews: reviews.length ? reviews : SAMPLE_REVIEWS,
     stock: stock.length ? stock : SAMPLE_STOCK,
+    estimates: estimates.length ? estimates : SAMPLE_ESTIMATES,
     ledger,
     reviewsAreSample: reviews.length === 0,
     stockIsSample: stock.length === 0,
+    estimatesAreSample: estimates.length === 0,
   };
 });
 
@@ -100,10 +124,14 @@ export const adminLoad = createServerFn({ method: "POST" })
 
     const r = await DB.prepare("SELECT * FROM reviews ORDER BY no DESC, id DESC LIMIT 500").all<ReviewRow>();
     const s = await DB.prepare("SELECT * FROM stock ORDER BY sort_order DESC, id DESC LIMIT 500").all<StockRow>();
+    const e = await DB.prepare(
+      "SELECT * FROM estimates ORDER BY sort_order DESC, id DESC LIMIT 500",
+    ).all<EstimateRow>();
     return {
       ok: true as const,
       reviews: (r.results ?? []) as Review[],
       stock: (s.results ?? []).map(toStock),
+      estimates: (e.results ?? []).map(toEstimate),
       ledger: await readSettings(),
     };
   });
@@ -121,7 +149,7 @@ const ReviewInput = Pw.extend({
   customer: z.string().max(40).default(""),
   quote: z.string().max(2000).default(""),
   reply: z.string().max(2000).default(""),
-  photo: z.string().max(300).default(""),
+  photo: z.string().max(3000).default(""),
   published: z.number().default(1),
 });
 
@@ -138,7 +166,7 @@ export const saveReview = createServerFn({ method: "POST" })
       clean(data.model, 60), clean(data.contract, 20), Math.max(0, Math.floor(data.term)),
       clean(data.region, 30), clean(data.owner, 20), clean(data.customer, 40),
       cleanMultiline(data.quote, 2000), cleanMultiline(data.reply, 2000),
-      clean(data.photo, 300), data.published ? 1 : 0,
+      clean(data.photo, 3000), data.published ? 1 : 0,
     ];
 
     if (data.id > 0) {
@@ -175,7 +203,7 @@ const StockInput = Pw.extend({
   monthlyFrom: z.number().default(0),
   options: z.string().max(400).default(""),
   note: z.string().max(600).default(""),
-  photo: z.string().max(300).default(""),
+  photo: z.string().max(3000).default(""),
   sortOrder: z.number().default(0),
 });
 
@@ -194,7 +222,7 @@ export const saveStock = createServerFn({ method: "POST" })
       clean(data.availDate, 30), Math.max(0, Math.floor(data.termMonths)),
       Math.max(0, Math.floor(data.prepayPct)), Math.max(0, Math.floor(data.depositPct)),
       Math.max(0, Math.floor(data.monthlyFrom)), clean(data.options, 400),
-      cleanMultiline(data.note, 600), clean(data.photo, 300), Math.floor(data.sortOrder),
+      cleanMultiline(data.note, 600), clean(data.photo, 3000), Math.floor(data.sortOrder),
     ];
 
     if (data.id > 0) {
@@ -215,19 +243,72 @@ export const saveStock = createServerFn({ method: "POST" })
     return { ok: true as const, id: Number(res.meta?.last_row_id ?? 0) };
   });
 
-export const deleteRow = createServerFn({ method: "POST" })
-  .inputValidator(Pw.extend({ table: z.enum(["reviews", "stock", "quote_requests"]), id: z.number() }))
+const EstimateInput = Pw.extend({
+  id: z.number().default(0),
+  brand: z.string().max(30).default(""),
+  model: z.string().max(60).default(""),
+  trim: z.string().max(60).default(""),
+  contract: z.string().max(20).default("리스"),
+  termMonths: z.number().default(48),
+  monthlyFrom: z.number().default(0),
+  quotedAt: z.string().max(20).default(""),
+  body: z.string().max(4000).default(""),
+  photo: z.string().max(3000).default(""),
+  published: z.number().default(1),
+  sortOrder: z.number().default(0),
+});
+
+export const saveEstimate = createServerFn({ method: "POST" })
+  .inputValidator(EstimateInput)
   .handler(async ({ data }) => {
     const auth = await requireAdmin(data.password);
     if (!auth.ok) return { ok: false as const, reason: auth.reason };
     const { DB } = bindings();
     if (!DB) return { ok: false as const, reason: "storage_unavailable" };
-    const sql =
-      data.table === "reviews"
-        ? "DELETE FROM reviews WHERE id = ?"
-        : data.table === "stock"
-          ? "DELETE FROM stock WHERE id = ?"
-          : "DELETE FROM quote_requests WHERE id = ?";
+
+    const v = [
+      clean(data.brand, 30), clean(data.model, 60), clean(data.trim, 60),
+      clean(data.contract, 20), Math.max(0, Math.floor(data.termMonths)),
+      Math.max(0, Math.floor(data.monthlyFrom)), clean(data.quotedAt, 20),
+      cleanMultiline(data.body, 4000), clean(data.photo, 3000),
+      data.published ? 1 : 0, Math.floor(data.sortOrder),
+    ];
+
+    if (data.id > 0) {
+      await DB.prepare(
+        `UPDATE estimates SET brand=?, model=?, trim=?, contract=?, term_months=?,
+           monthly_from=?, quoted_at=?, body=?, photo=?, published=?, sort_order=?, updated_at=?
+         WHERE id=?`,
+      ).bind(...v, new Date().toISOString(), data.id).run();
+      return { ok: true as const, id: data.id };
+    }
+    const res = await DB.prepare(
+      `INSERT INTO estimates (brand, model, trim, contract, term_months, monthly_from,
+         quoted_at, body, photo, published, sort_order, created_at, updated_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    ).bind(...v, new Date().toISOString(), new Date().toISOString()).run();
+    return { ok: true as const, id: Number(res.meta?.last_row_id ?? 0) };
+  });
+
+export const deleteRow = createServerFn({ method: "POST" })
+  .inputValidator(
+    Pw.extend({
+      table: z.enum(["reviews", "stock", "estimates", "quote_requests"]),
+      id: z.number(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const auth = await requireAdmin(data.password);
+    if (!auth.ok) return { ok: false as const, reason: auth.reason };
+    const { DB } = bindings();
+    if (!DB) return { ok: false as const, reason: "storage_unavailable" };
+    const TABLES = {
+      reviews: "DELETE FROM reviews WHERE id = ?",
+      stock: "DELETE FROM stock WHERE id = ?",
+      estimates: "DELETE FROM estimates WHERE id = ?",
+      quote_requests: "DELETE FROM quote_requests WHERE id = ?",
+    } as const;
+    const sql = TABLES[data.table];
     await DB.prepare(sql).bind(Math.floor(data.id)).run();
     return { ok: true as const };
   });
