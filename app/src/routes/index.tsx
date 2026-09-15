@@ -108,8 +108,7 @@ function Home() {
             }
           />
           <p className="t-lede" style={{ marginBottom: 14 }}>
-            사진과 날짜가 있는 후기만 올립니다. 고객이 쓴 문장은 고치지 않고, 불리한 이야기도
-            지우지 않습니다.
+            타겟맨의 생생한 출고 후기만 올립니다.
           </p>
           <div className="t-grid3">
             {latest.map((r) => (
