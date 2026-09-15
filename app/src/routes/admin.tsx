@@ -5,19 +5,21 @@ import { listRequests, type RequestRow } from "../lib/api/admin.functions";
 import {
   adminLoad,
   deleteRow,
+  saveEstimate,
   saveLedger,
   saveReview,
   saveStock,
 } from "../lib/api/content.functions";
 import {
+  EMPTY_ESTIMATE,
   EMPTY_REVIEW,
   EMPTY_STOCK,
-  photoUrl,
+  type Estimate,
   type Ledger,
   type Review,
   type StockItem,
 } from "../lib/content";
-import { uploadPhoto } from "../lib/image";
+import { MultiPhotoPicker } from "../components/admin/photos";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -26,7 +28,7 @@ export const Route = createFileRoute("/admin")({
   component: Admin,
 });
 
-type Tab = "inbox" | "reviews" | "stock" | "settings";
+type Tab = "inbox" | "reviews" | "estimates" | "stock" | "settings";
 
 function when(iso: string) {
   const d = new Date(iso);
@@ -51,64 +53,6 @@ function Field({
   );
 }
 
-function PhotoPicker({
-  value,
-  password,
-  onChange,
-}: {
-  value: string;
-  password: string;
-  onChange: (key: string) => void;
-}) {
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-
-  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setBusy(true);
-    setErr("");
-    try {
-      onChange(await uploadPhoto(file, password));
-    } catch {
-      setErr("업로드에 실패했습니다. 다시 시도해 주세요.");
-    } finally {
-      setBusy(false);
-      e.target.value = "";
-    }
-  }
-
-  return (
-    <div className="t-field">
-      <label>사진</label>
-      {value ? (
-        <div style={{ marginBottom: 8 }}>
-          <img
-            src={photoUrl(value)}
-            alt="등록된 사진"
-            style={{ width: "100%", borderRadius: 10, border: "1px solid var(--t-line)" }}
-          />
-          <button
-            type="button"
-            className="t-cta-text"
-            style={{ marginTop: 6 }}
-            onClick={() => onChange("")}
-          >
-            사진 지우기
-          </button>
-        </div>
-      ) : null}
-      <input type="file" accept="image/*" capture="environment" onChange={pick} disabled={busy} />
-      <p className="t-small">
-        {busy
-          ? "올리는 중입니다."
-          : "휴대폰에서 바로 찍어 올리셔도 됩니다. 올릴 때 자동으로 줄여서 저장합니다. 번호판은 가려 주세요."}
-      </p>
-      {err ? <p className="t-small" style={{ color: "var(--t-notice)" }}>{err}</p> : null}
-    </div>
-  );
-}
-
 function Admin() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -119,10 +63,12 @@ function Admin() {
   const [rows, setRows] = useState<RequestRow[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stock, setStock] = useState<StockItem[]>([]);
+  const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [ledger, setLedger] = useState<Ledger>({ total: 0, thisMonth: 0, updatedAt: "" });
 
   const [editReview, setEditReview] = useState<Review | null>(null);
   const [editStock, setEditStock] = useState<StockItem | null>(null);
+  const [editEstimate, setEditEstimate] = useState<Estimate | null>(null);
 
   async function loadAll(pw: string) {
     setState("loading");
@@ -138,6 +84,7 @@ function Admin() {
       setRows(inbox.rows);
       setReviews(content.reviews);
       setStock(content.stock);
+      setEstimates(content.estimates);
       setLedger(content.ledger);
       setAuthed(true);
       setState("idle");
@@ -197,7 +144,8 @@ function Admin() {
   const TABS: Array<[Tab, string, number]> = [
     ["inbox", "접수함", rows.length],
     ["reviews", "후기", reviews.length],
-    ["stock", "재고", stock.length],
+    ["estimates", "차량별 견적", estimates.length],
+    ["stock", "재고(숨김)", stock.length],
     ["settings", "설정", 0],
   ];
 
@@ -357,10 +305,12 @@ function Admin() {
               <h2 style={{ fontSize: 16, marginBottom: 12 }}>
                 {editReview.id > 0 ? "후기 수정" : "새 후기"}
               </h2>
-              <PhotoPicker
+              <MultiPhotoPicker
+                label="출고 사진"
                 value={editReview.photo}
                 password={password}
                 onChange={(photo) => setEditReview({ ...editReview, photo })}
+                hint="여러 장 한 번에 고를 수 있습니다. 올린 뒤 편집을 눌러 번호판과 얼굴을 모자이크하세요. 맨 앞 사진이 목록에 대표로 나옵니다."
               />
               <div className="t-fieldrow">
                 <Field label="출고 번호">
@@ -528,6 +478,10 @@ function Admin() {
 
       {tab === "stock" ? (
         <section style={{ marginTop: 18 }}>
+          <p className="t-note" style={{ marginBottom: 12 }}>
+            즉시출고 재고는 메뉴에서 내렸습니다. 페이지 자체는 /stock 주소로 살아 있으니 나중에
+            다시 쓰실 수 있고, 지금은 아무 데서도 링크되지 않습니다.
+          </p>
           {editStock ? (
             <form
               className="t-form"
@@ -546,7 +500,8 @@ function Admin() {
               <h2 style={{ fontSize: 16, marginBottom: 12 }}>
                 {editStock.id > 0 ? "재고 수정" : "새 재고"}
               </h2>
-              <PhotoPicker
+              <MultiPhotoPicker
+                label="차량 사진"
                 value={editStock.photo}
                 password={password}
                 onChange={(photo) => setEditStock({ ...editStock, photo })}
@@ -783,16 +738,16 @@ function Admin() {
                 />
               </Field>
             </div>
-            <Field label="재고 기준 시각">
+            <Field label="자료 기준 시각">
               <input
                 value={ledger.updatedAt}
-                placeholder="2026.09.14 09:20"
+                placeholder="2026.09.15 09:20"
                 onChange={(e) => setLedger({ ...ledger, updatedAt: e.target.value })}
               />
             </Field>
             <p className="t-small" style={{ marginBottom: 12 }}>
-              재고를 갱신하실 때마다 이 시각을 같이 바꿔 주세요. 이 값이 즉시출고 페이지 상단에
-              그대로 찍힙니다. 2주 이상 오래된 시각이 찍혀 있으면 고객은 허위매물로 읽습니다.
+              견적을 새로 올리실 때마다 이 시각을 같이 바꿔 주세요. 2주 이상 오래된 시각이
+              찍혀 있으면 고객은 관리를 안 하는 사이트로 읽습니다.
             </p>
             <button className="t-cta-submit" type="submit">저장</button>
           </form>
