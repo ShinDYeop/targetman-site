@@ -21,6 +21,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReviewIdRouteImport } from './routes/review.$id'
+import { Route as EstimateIdRouteImport } from './routes/estimate.$id'
 import { Route as ApiUploadRouteImport } from './routes/api.upload'
 import { Route as ApiImgRouteImport } from './routes/api.img'
 
@@ -84,6 +85,11 @@ const ReviewIdRoute = ReviewIdRouteImport.update({
   path: '/review/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EstimateIdRoute = EstimateIdRouteImport.update({
+  id: '/estimate/$id',
+  path: '/estimate/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiUploadRoute = ApiUploadRouteImport.update({
   id: '/api/upload',
   path: '/api/upload',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/videos': typeof VideosRoute
   '/api/img': typeof ApiImgRoute
   '/api/upload': typeof ApiUploadRoute
+  '/estimate/$id': typeof EstimateIdRoute
   '/review/$id': typeof ReviewIdRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/videos': typeof VideosRoute
   '/api/img': typeof ApiImgRoute
   '/api/upload': typeof ApiUploadRoute
+  '/estimate/$id': typeof EstimateIdRoute
   '/review/$id': typeof ReviewIdRoute
 }
 export interface FileRoutesById {
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/videos': typeof VideosRoute
   '/api/img': typeof ApiImgRoute
   '/api/upload': typeof ApiUploadRoute
+  '/estimate/$id': typeof EstimateIdRoute
   '/review/$id': typeof ReviewIdRoute
 }
 export interface FileRouteTypes {
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/api/img'
     | '/api/upload'
+    | '/estimate/$id'
     | '/review/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/api/img'
     | '/api/upload'
+    | '/estimate/$id'
     | '/review/$id'
   id:
     | '__root__'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/api/img'
     | '/api/upload'
+    | '/estimate/$id'
     | '/review/$id'
   fileRoutesById: FileRoutesById
 }
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   VideosRoute: typeof VideosRoute
   ApiImgRoute: typeof ApiImgRoute
   ApiUploadRoute: typeof ApiUploadRoute
+  EstimateIdRoute: typeof EstimateIdRoute
   ReviewIdRoute: typeof ReviewIdRoute
 }
 
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/estimate/$id': {
+      id: '/estimate/$id'
+      path: '/estimate/$id'
+      fullPath: '/estimate/$id'
+      preLoaderRoute: typeof EstimateIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/upload': {
       id: '/api/upload'
       path: '/api/upload'
@@ -329,6 +349,7 @@ const rootRouteChildren: RootRouteChildren = {
   VideosRoute: VideosRoute,
   ApiImgRoute: ApiImgRoute,
   ApiUploadRoute: ApiUploadRoute,
+  EstimateIdRoute: EstimateIdRoute,
   ReviewIdRoute: ReviewIdRoute,
 }
 export const routeTree = rootRouteImport

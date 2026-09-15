@@ -34,7 +34,21 @@ export const Route = createFileRoute('/sitemap.xml')({
           reviewPages = []
         }
 
-        const all = [...PAGES, ...reviewPages]
+        let estimatePages: Array<{ path: string; priority: string; changefreq: string }> = []
+        try {
+          const data = await loadSiteContent()
+          if (!data.estimatesAreSample) {
+            estimatePages = data.estimates.map((e) => ({
+              path: `/estimate/${e.id}`,
+              priority: '0.7',
+              changefreq: 'monthly',
+            }))
+          }
+        } catch {
+          estimatePages = []
+        }
+
+        const all = [...PAGES, ...reviewPages, ...estimatePages]
         const xml = [
           '<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

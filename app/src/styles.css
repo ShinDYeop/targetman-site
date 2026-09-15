@@ -626,3 +626,26 @@ body.t-body {
 .t-cta-yt:hover { background: #d90000; transform: translateY(-1px); box-shadow: 0 9px 24px rgba(255, 0, 0, 0.26); }
 .t-cta-yt:active { transform: translateY(1px); box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2); }
 .t-cta-yt:focus-visible { outline: 3px solid rgba(255, 0, 0, 0.35); outline-offset: 2px; }
+
+
+/* ── 견적 카드를 눌러 상세로 ─────────────────────────────── */
+.t-est { position: relative; }
+.t-est[data-linked] { transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease; }
+.t-est[data-linked]:hover { border-color: var(--t-accent); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(11, 16, 32, 0.09); }
+.t-est-a { color: inherit; text-decoration: none; }
+.t-est-a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--t-r); }
+.t-est-a:focus-visible::after { outline: 2px solid var(--t-accent); outline-offset: 2px; }
+.t-est .t-photos, .t-est .t-ph-nav, .t-est .t-ph-dots, .t-est .t-photos-n { z-index: 2; }
+.t-est .t-photos { position: relative; }
+.t-est .t-cta-ask { position: relative; z-index: 2; }
+.t-est[data-linked] p.t-est-text {
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.t-est-more {
+  margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--t-line);
+  display: flex; justify-content: flex-end;
+}
+.t-est-go { font-size: 12.5px; font-weight: 700; color: var(--t-accent); letter-spacing: -0.01em; }
+.t-est-go i { font-style: normal; display: inline-block; transition: transform 160ms ease; }
+.t-est[data-linked]:hover .t-est-go i { transform: translateX(3px); }

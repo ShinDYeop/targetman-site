@@ -123,29 +123,23 @@ export function PhotoFrame({
 export function ReviewCard({
   r,
   commentCount = 0,
-  linked = false,
 }: {
   r: Review;
   commentCount?: number;
-  linked?: boolean;
 }) {
   const car = `${r.brand} ${r.model}`;
 
   return (
-    <article className="t-rev" data-linked={linked ? "1" : undefined}>
+    <article className="t-rev" data-linked="1">
       <PhotoFrame photos={r.photo} alt={`${car} 출고 사진`} empty="고객 실사 사진 자리" />
       <div className="t-rev-body">
         <div className="t-rev-top">
           <span className="t-rev-meta">{r.date}</span>
         </div>
         <div className="t-rev-car">
-          {linked ? (
-            <Link to="/review/$id" params={{ id: String(r.id) }} className="t-rev-a">
-              {car}
-            </Link>
-          ) : (
-            car
-          )}
+          <Link to="/review/$id" params={{ id: String(r.id) }} className="t-rev-a">
+            {car}
+          </Link>
         </div>
         <div className="t-rev-meta">
           {[r.contract, r.term ? `${r.term}개월` : "", r.owner, r.region]
@@ -154,14 +148,12 @@ export function ReviewCard({
         </div>
         {r.quote ? <p className="t-rev-q">{r.quote}</p> : null}
         {r.customer ? <p className="t-rev-who">{r.customer}</p> : null}
-        {linked ? (
-          <div className="t-rev-more">
-            <span>댓글 {commentCount}</span>
-            <span className="t-rev-go">
-              자세히 보기 <i aria-hidden="true">&rsaquo;</i>
-            </span>
-          </div>
-        ) : null}
+        <div className="t-rev-more">
+          <span>댓글 {commentCount}</span>
+          <span className="t-rev-go">
+            자세히 보기 <i aria-hidden="true">&rsaquo;</i>
+          </span>
+        </div>
       </div>
     </article>
   );
@@ -258,7 +250,7 @@ export function StockCard({ s }: { s: StockItem }) {
 
 export function EstimateCard({ e }: { e: Estimate }) {
   return (
-    <article className="t-est">
+    <article className="t-est" data-linked="1">
       <PhotoFrame
         photos={e.photo}
         alt={`${e.brand} ${e.model} 견적표`}
@@ -267,7 +259,9 @@ export function EstimateCard({ e }: { e: Estimate }) {
       <div className="t-est-body">
         <div className="t-est-top">
           <span className="t-est-car">
-            {e.brand} {e.model}
+            <Link to="/estimate/$id" params={{ id: String(e.id) }} className="t-est-a">
+              {e.brand} {e.model}
+            </Link>
           </span>
           {e.trim ? <span className="t-est-trim">{e.trim}</span> : null}
           {e.quotedAt ? <span className="t-est-when">{e.quotedAt} 산출</span> : null}
@@ -287,6 +281,12 @@ export function EstimateCard({ e }: { e: Estimate }) {
         ) : null}
 
         {e.body ? <p className="t-est-text">{e.body}</p> : null}
+
+        <div className="t-est-more">
+          <span className="t-est-go">
+            견적 자세히 보기 <i aria-hidden="true">&rsaquo;</i>
+          </span>
+        </div>
       </div>
       <a
         className="t-cta-ask"

@@ -115,7 +115,6 @@ function Home() {
               <ReviewCard
                 key={r.id}
                 r={r}
-                linked={!data.reviewsAreSample}
                 commentCount={data.comments.filter((c) => c.reviewId === r.id).length}
               />
             ))}
