@@ -4,6 +4,7 @@ import { useState } from "react";
 import { listRequests, type RequestRow } from "../lib/api/admin.functions";
 import {
   adminLoad,
+  approveComment,
   deleteRow,
   saveEstimate,
   saveLedger,
@@ -14,6 +15,7 @@ import {
   EMPTY_ESTIMATE,
   EMPTY_REVIEW,
   EMPTY_STOCK,
+  type Comment,
   type Estimate,
   type Ledger,
   type Review,
@@ -28,7 +30,7 @@ export const Route = createFileRoute("/admin")({
   component: Admin,
 });
 
-type Tab = "inbox" | "reviews" | "estimates" | "stock" | "settings";
+type Tab = "inbox" | "reviews" | "estimates" | "comments" | "stock" | "settings";
 
 function when(iso: string) {
   const d = new Date(iso);
@@ -64,6 +66,7 @@ function Admin() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stock, setStock] = useState<StockItem[]>([]);
   const [estimates, setEstimates] = useState<Estimate[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [ledger, setLedger] = useState<Ledger>({ total: 0, thisMonth: 0, updatedAt: "" });
 
   const [editReview, setEditReview] = useState<Review | null>(null);
@@ -85,6 +88,7 @@ function Admin() {
       setReviews(content.reviews);
       setStock(content.stock);
       setEstimates(content.estimates);
+      setComments(content.comments);
       setLedger(content.ledger);
       setAuthed(true);
       setState("idle");
@@ -95,6 +99,15 @@ function Admin() {
 
   async function refresh() {
     await loadAll(password);
+  }
+
+  /** 맨 위 "관리자"를 누르면 첫 화면(접수함)으로 돌아옵니다. 열어 둔 입력창도 닫습니다. */
+  function goHome() {
+    setTab("inbox");
+    setEditReview(null);
+    setEditStock(null);
+    setEditEstimate(null);
+    setMsg("");
   }
 
   function flash(text: string) {
@@ -145,6 +158,7 @@ function Admin() {
     ["inbox", "접수함", rows.length],
     ["reviews", "후기", reviews.length],
     ["estimates", "차량별 견적", estimates.length],
+    ["comments", "댓글", comments.filter((c) => !c.approved).length],
     ["stock", "재고(숨김)", stock.length],
     ["settings", "설정", 0],
   ];
@@ -152,7 +166,24 @@ function Admin() {
   return (
     <div className="t-wrap" style={{ paddingBlock: 26, maxWidth: 760 }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-        <h1 style={{ fontSize: 22 }}>관리자</h1>
+        <h1 style={{ fontSize: 22, margin: 0 }}>
+          <button
+            type="button"
+            onClick={goHome}
+            title="관리자 첫 화면으로"
+            aria-label="관리자 첫 화면으로"
+            style={{
+              font: "inherit",
+              color: "inherit",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            관리자
+          </button>
+        </h1>
         <button type="button" className="t-cta-text" onClick={() => void refresh()}>
           새로고침
         </button>
@@ -392,12 +423,6 @@ function Admin() {
                 <textarea
                   value={editReview.quote}
                   onChange={(e) => setEditReview({ ...editReview, quote: e.target.value })}
-                />
-              </Field>
-              <Field label="담당자 답글">
-                <textarea
-                  value={editReview.reply}
-                  onChange={(e) => setEditReview({ ...editReview, reply: e.target.value })}
                 />
               </Field>
               <div className="t-consent">
@@ -672,6 +697,80 @@ function Admin() {
               </div>
             </>
           )}
+        </section>
+      ) : null}
+
+      {tab === "comments" ? (
+        <section style={{ marginTop: 18 }}>
+          <p className="t-small">
+            고객이 후기에 남긴 댓글입니다. <b>공개</b>를 눌러야 사이트에 나갑니다.
+            성함은 사이트에서 김○○ 처럼 성만 보이게 가려집니다. 여기서는 쓰신 그대로 보입니다.
+          </p>
+          <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+            {comments.map((c) => {
+              const r = reviews.find((x) => x.id === c.reviewId);
+              return (
+                <article className="t-card" key={c.id}>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <span className="t-badge" data-k={c.approved ? "done" : "now"}>
+                      {c.approved ? "공개중" : "대기"}
+                    </span>
+                    <strong style={{ fontSize: 14.5 }}>{c.name}</strong>
+                    <span className="t-rev-meta">
+                      {r ? `No.${r.no} ${r.brand} ${r.model}`.trim() : `후기 #${c.reviewId}`}
+                    </span>
+                    <span className="t-rev-meta t-mono" style={{ marginLeft: "auto" }}>
+                      {when(c.createdAt)}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      marginTop: 8,
+                      whiteSpace: "pre-wrap",
+                      fontSize: 13.5,
+                      lineHeight: 1.7,
+                      color: "var(--t-ink-2)",
+                    }}
+                  >
+                    {c.body}
+                  </p>
+                  <div style={{ marginTop: 8, display: "flex", gap: 14 }}>
+                    <button
+                      type="button"
+                      className="t-cta-text"
+                      onClick={async () => {
+                        await approveComment({
+                          data: { password, id: c.id, approved: c.approved ? 0 : 1 },
+                        });
+                        flash(c.approved ? "사이트에서 내렸습니다." : "공개했습니다.");
+                        await refresh();
+                      }}
+                    >
+                      {c.approved ? "사이트에서 내리기" : "공개하기"}
+                    </button>
+                    <button
+                      type="button"
+                      className="t-cta-text"
+                      style={{ color: "var(--t-notice)" }}
+                      onClick={async () => {
+                        if (!window.confirm("이 댓글을 지울까요? 되돌릴 수 없습니다.")) return;
+                        await deleteRow({ data: { password, table: "comments", id: c.id } });
+                        flash("삭제했습니다.");
+                        await refresh();
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+            {comments.length === 0 ? (
+              <p className="t-note">
+                아직 달린 댓글이 없습니다. 고객이 출고 후기 페이지에서 남기면 여기에 쌓입니다.
+              </p>
+            ) : null}
+          </div>
         </section>
       ) : null}
 
