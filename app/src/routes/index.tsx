@@ -133,8 +133,8 @@ function Home() {
             }
           />
           <p className="t-lede" style={{ marginBottom: 14 }}>
-            실제로 뽑아 본 견적표를 원본 그대로 올립니다. 다만 그 금액은 그 조건에서만 나오는
-            금액입니다. 선납금 하나만 바뀌어도 월 납입금은 달라집니다.
+            어디든 비교해도 밀리지 않는 가장 합리적인 견적을 실제로 뽑아 보았습니다. 클릭해서
+            자세하게 확인해보세요.
           </p>
           {estimates.map((e) => (
             <EstimateCard key={e.id} e={e} />
