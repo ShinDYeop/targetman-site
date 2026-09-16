@@ -353,22 +353,16 @@ function Admin() {
                 onChange={(photo) => setEditReview({ ...editReview, photo })}
                 hint="여러 장 한 번에 고를 수 있습니다. 올린 뒤 편집을 눌러 번호판과 얼굴을 모자이크하세요. 맨 앞 사진이 목록에 대표로 나옵니다."
               />
-              <div className="t-fieldrow">
-                <Field label="출고 번호">
-                  <input
-                    type="number"
-                    value={editReview.no}
-                    onChange={(e) => setEditReview({ ...editReview, no: Number(e.target.value) })}
-                  />
-                </Field>
-                <Field label="출고일">
-                  <input
-                    value={editReview.date}
-                    placeholder="2026.09.14"
-                    onChange={(e) => setEditReview({ ...editReview, date: e.target.value })}
-                  />
-                </Field>
-              </div>
+              <Field label="출고일">
+                <input
+                  value={editReview.date}
+                  placeholder="2026.09.14"
+                  onChange={(e) => setEditReview({ ...editReview, date: e.target.value })}
+                />
+              </Field>
+              <p className="t-small" style={{ marginBottom: 12 }}>
+                이 날짜가 최근일수록 사이트 맨 위에 올라갑니다. 2026.09.14 처럼 적어 주세요.
+              </p>
               <div className="t-fieldrow">
                 <Field label="브랜드">
                   <input
@@ -473,7 +467,7 @@ function Admin() {
                   <div className="t-card" key={r.id}>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                       <strong style={{ fontSize: 14.5 }}>
-                        No.{r.no} {r.brand} {r.model}
+                        {r.date} {r.brand} {r.model}
                       </strong>
                       <span className="t-rev-meta">{r.date}</span>
                       {r.published ? null : (
@@ -948,7 +942,7 @@ function Admin() {
                     </span>
                     <strong style={{ fontSize: 14.5 }}>{c.name}</strong>
                     <span className="t-rev-meta">
-                      {r ? `No.${r.no} ${r.brand} ${r.model}`.trim() : `후기 #${c.reviewId}`}
+                      {r ? `${r.brand} ${r.model}`.trim() : `후기 #${c.reviewId}`}
                     </span>
                     <span className="t-rev-meta t-mono" style={{ marginLeft: "auto" }}>
                       {when(c.createdAt)}

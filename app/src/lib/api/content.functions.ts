@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { bindings } from "../bindings.server";
 import type { Comment, Estimate, Ledger, Review, StockItem, Video } from "../content";
-import { maskName, youtubeId } from "../content";
+import { maskName, reviewDateKey, youtubeId } from "../content";
 import { SAMPLE_REVIEWS } from "../../data/reviews";
 import { SAMPLE_STOCK } from "../../data/stock";
 import { SAMPLE_ESTIMATES } from "../../data/estimates";
@@ -75,6 +75,11 @@ function toVideo(r: VideoRow): Video {
   };
 }
 
+/** 출고일이 최근인 건이 항상 맨 위에 옵니다. 날짜가 같거나 비어 있으면 나중에 등록한 건이 위로. */
+function sortByDate(rows: Review[]): Review[] {
+  return [...rows].sort((a, b) => reviewDateKey(b.date) - reviewDateKey(a.date) || b.id - a.id);
+}
+
 const DEFAULT_LEDGER: Ledger = { total: 513, thisMonth: 12, updatedAt: "" };
 
 async function readSettings(): Promise<Ledger> {
@@ -114,9 +119,9 @@ export const loadSiteContent = createServerFn({ method: "GET" }).handler(async (
   let videos: Video[] = [];
   try {
     const r = await DB.prepare(
-      "SELECT * FROM reviews WHERE published = 1 ORDER BY no DESC, id DESC LIMIT 300",
+      "SELECT * FROM reviews WHERE published = 1 ORDER BY id DESC LIMIT 300",
     ).all<ReviewRow>();
-    reviews = (r.results ?? []) as Review[];
+    reviews = sortByDate((r.results ?? []) as Review[]);
   } catch { /* 테이블이 아직 없으면 예시로 */ }
   try {
     const s = await DB.prepare(
@@ -169,7 +174,7 @@ export const adminLoad = createServerFn({ method: "POST" })
     const { DB } = bindings();
     if (!DB) return { ok: false as const, reason: "storage_unavailable" };
 
-    const r = await DB.prepare("SELECT * FROM reviews ORDER BY no DESC, id DESC LIMIT 500").all<ReviewRow>();
+    const r = await DB.prepare("SELECT * FROM reviews ORDER BY id DESC LIMIT 500").all<ReviewRow>();
     const s = await DB.prepare("SELECT * FROM stock ORDER BY sort_order DESC, id DESC LIMIT 500").all<StockRow>();
     const e = await DB.prepare(
       "SELECT * FROM estimates ORDER BY sort_order DESC, id DESC LIMIT 500",
@@ -184,7 +189,7 @@ export const adminLoad = createServerFn({ method: "POST" })
       ok: true as const,
       comments: (cm.results ?? []).map((r) => toComment(r, false)),
       videos: (vd.results ?? []).map(toVideo),
-      reviews: (r.results ?? []) as Review[],
+      reviews: sortByDate((r.results ?? []) as Review[]),
       stock: (s.results ?? []).map(toStock),
       estimates: (e.results ?? []).map(toEstimate),
       ledger: await readSettings(),

@@ -210,3 +210,13 @@ export function youtubeThumb(id: string): string {
 export function youtubeWatch(id: string): string {
   return `https://www.youtube.com/watch?v=${id}`;
 }
+
+/**
+ * 출고일을 정렬용 숫자로 바꿉니다. 2026.09.10 과 2026.9.18 처럼
+ * 자리수를 다르게 적으셔도 같은 기준으로 비교됩니다. 못 읽으면 0.
+ */
+export function reviewDateKey(date: string): number {
+  const m = (date || "").match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+  if (!m) return 0;
+  return Number(m[1]) * 10000 + Number(m[2]) * 100 + Number(m[3]);
+}

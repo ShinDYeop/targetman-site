@@ -13,7 +13,7 @@ export const Route = createFileRoute("/reviews")({
       {
         name: "description",
         content:
-          "사진과 날짜가 있는 출고 후기만 번호를 붙여 공개합니다. 브랜드와 계약 형태로 골라 보세요.",
+          "사진과 날짜가 남아 있는 출고 후기만 올립니다. 브랜드와 계약 형태로 골라 보세요.",
       },
     ],
   }),

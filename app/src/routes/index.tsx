@@ -21,6 +21,7 @@ const STEPS = [
 function Home() {
   const data = Route.useLoaderData();
   const latest = data.reviews.slice(0, 3);
+  const ledgerRows = data.reviews.slice(0, 6);
   const estimates = data.estimates.slice(0, 2);
 
   const sample = [
@@ -41,8 +42,8 @@ function Home() {
             출고 끝까지 직접 담당합니다.
           </h1>
           <p className="t-sub t-rise t-rise-3">
-            출고 한 건마다 번호를 붙여 공개합니다. 몇 대를 인도했는지, 고객이 실제로 뭐라고
-            했는지, 어떤 차가 어떤 조건에서 얼마였는지 전부 이 페이지에 있습니다.
+            몇 대를 인도했는지, 고객이 실제로 뭐라고 했는지, 어떤 차가 어떤 조건에서
+            얼마였는지 전부 이 페이지에 있습니다.
           </p>
           <div className="t-hero-actions">
             <Link to="/estimates" className="t-cta-plate">
@@ -56,6 +57,29 @@ function Home() {
             >
               1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
             </a>
+          </div>
+
+          <div className="t-ledger t-rise t-rise-2">
+            <div className="t-ledger-hd">
+              <span>최근 출고 기록</span>
+              <Link to="/reviews" className="t-ledger-more">
+                전체 보기 <i aria-hidden="true">&rsaquo;</i>
+              </Link>
+            </div>
+            {ledgerRows.map((r, i) => (
+              <Link
+                to="/review/$id"
+                params={{ id: String(r.id) }}
+                className="t-ledger-row"
+                data-first={i === 0 ? "1" : undefined}
+                key={r.id}
+              >
+                <span className="t-car">
+                  {r.brand} {r.model}
+                </span>
+                <span className="t-dt">{r.date}</span>
+              </Link>
+            ))}
           </div>
         </section>
 
