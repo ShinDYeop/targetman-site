@@ -3,7 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PhotoFrame } from "../components/site/cards";
 import { Comments } from "../components/site/comments";
 import { Page } from "../components/site/chrome";
+import { RichText } from "../components/site/richtext";
 import { loadSiteContent } from "../lib/api/content.functions";
+import { photoJoin, photoList, usedPhotoIndexes } from "../lib/content";
 import { kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/review/$id")({
@@ -43,6 +45,11 @@ function ReviewDetail() {
   }
 
   const comments = data.comments.filter((c) => c.reviewId === r.id);
+
+  // 본문 안에 넣은 사진은 위 슬라이드에서 빼서 같은 사진이 두 번 나오지 않게 합니다.
+  const used = new Set(usedPhotoIndexes(r.quote));
+  const topKeys = photoList(r.photo).filter((_, i) => !used.has(i));
+  const hasTop = topKeys.length > 0;
   const spec = (
     [
       ["출고일", r.date],
@@ -71,15 +78,17 @@ function ReviewDetail() {
             {[r.date ? `${r.date} 출고` : "", r.customer].filter(Boolean).join(" · ")}
           </p>
 
-          <div className="t-detail">
-            <div className="t-detail-ph">
-              <PhotoFrame
-                photos={r.photo}
-                alt={`${r.brand} ${r.model} 출고 사진`}
-                empty="고객 실사 사진 자리"
-                zoom
-              />
-            </div>
+          <div className="t-detail" data-nophoto={hasTop ? undefined : "1"}>
+            {hasTop ? (
+              <div className="t-detail-ph">
+                <PhotoFrame
+                  photos={photoJoin(topKeys)}
+                  alt={`${r.brand} ${r.model} 출고 사진`}
+                  empty=""
+                  zoom
+                />
+              </div>
+            ) : null}
             <aside className="t-detail-side">
               <dl className="t-spec">
                 {spec.map(([k, v]) => (
@@ -107,7 +116,11 @@ function ReviewDetail() {
 
           {r.quote ? (
             <blockquote className="t-detail-q">
-              <p>{r.quote}</p>
+              <RichText
+                text={r.quote}
+                photos={r.photo}
+                alt={`${r.brand} ${r.model} 출고 사진`}
+              />
               {r.customer ? <cite>{r.customer}</cite> : null}
             </blockquote>
           ) : null}

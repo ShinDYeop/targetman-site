@@ -220,3 +220,24 @@ export function reviewDateKey(date: string): number {
   if (!m) return 0;
   return Number(m[1]) * 10000 + Number(m[2]) * 100 + Number(m[3]);
 }
+
+/** 본문에 적은 [사진1] 표시에서 몇 번째 사진을 썼는지 뽑습니다. (0부터) */
+export function usedPhotoIndexes(text: string): number[] {
+  const out: number[] = [];
+  const re = /\[사진\s*(\d{1,2})\]/g;
+  let m = re.exec(text || "");
+  while (m) {
+    const n = Number(m[1]) - 1;
+    if (n >= 0) out.push(n);
+    m = re.exec(text || "");
+  }
+  return out;
+}
+
+/** 목록 카드에서는 사진 표시를 빼고 글만 미리 보여 줍니다. */
+export function stripPhotoTokens(text: string): string {
+  return (text || "")
+    .replace(/\[사진\s*\d{1,2}\]/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}

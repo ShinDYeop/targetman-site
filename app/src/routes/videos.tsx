@@ -3,21 +3,25 @@ import { useState } from "react";
 
 import { Page, SecHead } from "../components/site/chrome";
 import { loadSiteContent } from "../lib/api/content.functions";
+import { loadLatestVideos, type LatestVideo } from "../lib/api/youtube.functions";
 import { youtubeThumb, youtubeWatch, type Video } from "../lib/content";
 import { SITE, kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
     meta: [
-      { title: "브랜드별 영상 · 타겟맨 신동엽" },
+      { title: "타겟맨의 출고리뷰 · 타겟맨 신동엽" },
       {
         name: "description",
         content:
-          "타겟맨 신동엽 채널의 차량 설명과 출고 리뷰 영상을 브랜드별로 모아 둡니다. 후기와 영상이 서로를 확인해 줍니다.",
+          "타겟맨 신동엽 채널의 최신 차량 설명과 출고 리뷰 영상입니다. 후기와 영상이 서로를 확인해 줍니다.",
       },
     ],
   }),
-  loader: async () => await loadSiteContent(),
+  loader: async () => {
+    const [content, latest] = await Promise.all([loadSiteContent(), loadLatestVideos()]);
+    return { ...content, latest };
+  },
   component: Videos,
 });
 
@@ -49,6 +53,34 @@ function VideoCard({ v }: { v: Video }) {
         {v.brand ? <span className="t-vid-brand">{v.brand}</span> : null}
         <span className="t-vid-title">{v.title || v.brand || "영상 보기"}</span>
         {v.note ? <span className="t-vid-note">{v.note}</span> : null}
+      </span>
+    </a>
+  );
+}
+
+/** 채널에서 막 가져온 영상 한 칸. 직접 등록한 영상 카드와 생김새를 맞춥니다. */
+function LatestCard({ v }: { v: LatestVideo }) {
+  const when = v.published ? v.published.slice(0, 10).replace(/-/g, ".") : "";
+  return (
+    <a
+      className="t-vid"
+      href={youtubeWatch(v.videoId)}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`${v.title} 영상 보기 (유튜브에서 열림)`}
+    >
+      <span className="t-vid-th">
+        <img src={youtubeThumb(v.videoId)} alt="" loading="lazy" />
+        <span className="t-vid-play" aria-hidden="true">
+          <svg viewBox="0 0 28 20" focusable="false">
+            <rect width="28" height="20" rx="5" fill="#ff0000" />
+            <path d="M11.4 5.8 18.6 10l-7.2 4.2V5.8Z" fill="#fff" />
+          </svg>
+        </span>
+      </span>
+      <span className="t-vid-body">
+        {when ? <span className="t-vid-brand">{when}</span> : null}
+        <span className="t-vid-title">{v.title}</span>
       </span>
     </a>
   );
@@ -86,48 +118,66 @@ function Videos() {
         </section>
 
         <section className="t-sec">
-          <SecHead ix="영상" title="브랜드별 영상" />
+          <SecHead
+            ix="영상"
+            title="타겟맨의 출고리뷰"
+            aside={
+              <a className="t-cta-text" href={SITE.youtube} target="_blank" rel="noreferrer">
+                채널 전체 <i aria-hidden="true">&rsaquo;</i>
+              </a>
+            }
+          />
+          <p className="t-lede" style={{ marginBottom: 18 }}>
+            채널에 올라온 최신 영상 여섯 개입니다. 새 영상을 올리시면 여기도 자동으로 바뀝니다.
+          </p>
 
-          {videos.length === 0 ? (
-            <div className="t-note t-col">
-              아직 여기에 걸어 둔 영상이 없습니다. 채널에는 계속 올라가고 있으니 위의 유튜브
-              버튼으로 바로 확인해 주세요. 찾으시는 차종이 있으면 카톡으로 말씀해 주시면 해당
-              영상 링크를 보내드립니다.
+          {data.latest.length > 0 ? (
+            <div className="t-vids">
+              {data.latest.map((v) => (
+                <LatestCard key={v.videoId} v={v} />
+              ))}
             </div>
           ) : (
-            <>
-              {brands.length > 2 ? (
-                <div className="t-chips">
-                  {brands.map((b) => (
-                    <button
-                      key={b}
-                      type="button"
-                      className="t-chip"
-                      data-on={brand === b ? "1" : undefined}
-                      onClick={() => setBrand(b)}
-                    >
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-
-              <div className="t-vids">
-                {list.map((v) => (
-                  <VideoCard key={v.id} v={v} />
-                ))}
-              </div>
-
-              {list.length === 0 ? (
-                <p className="t-note">이 브랜드로 걸어 둔 영상이 아직 없습니다.</p>
-              ) : null}
-
-              <p className="t-small" style={{ marginTop: 16 }}>
-                썸네일과 제목은 유튜브에 올라간 그대로입니다. 누르면 유튜브에서 열립니다.
-              </p>
-            </>
+            <div className="t-note t-col">
+              지금은 채널 목록을 불러오지 못했습니다. 위의 유튜브 버튼으로 바로 확인해 주세요.
+            </div>
           )}
         </section>
+
+        {videos.length > 0 ? (
+          <section className="t-sec">
+            <SecHead ix="정리" title="차종별로 골라 보기" />
+            {brands.length > 2 ? (
+              <div className="t-chips">
+                {brands.map((b) => (
+                  <button
+                    key={b}
+                    type="button"
+                    className="t-chip"
+                    data-on={brand === b ? "1" : undefined}
+                    onClick={() => setBrand(b)}
+                  >
+                    {b}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="t-vids">
+              {list.map((v) => (
+                <VideoCard key={v.id} v={v} />
+              ))}
+            </div>
+
+            {list.length === 0 ? (
+              <p className="t-note">이 브랜드로 걸어 둔 영상이 아직 없습니다.</p>
+            ) : null}
+
+            <p className="t-small" style={{ marginTop: 16 }}>
+              썸네일과 제목은 유튜브에 올라간 그대로입니다. 누르면 유튜브에서 열립니다.
+            </p>
+          </section>
+        ) : null}
 
         <section className="t-sec">
           <div className="t-card t-col">

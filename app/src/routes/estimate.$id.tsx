@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { PhotoFrame } from "../components/site/cards";
 import { Page } from "../components/site/chrome";
+import { RichText } from "../components/site/richtext";
 import { loadSiteContent } from "../lib/api/content.functions";
+import { photoJoin, photoList, usedPhotoIndexes } from "../lib/content";
 import { kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/estimate/$id")({
@@ -43,6 +45,10 @@ function EstimateDetail() {
     );
   }
 
+  const used = new Set(usedPhotoIndexes(e.body));
+  const topKeys = photoList(e.photo).filter((_, i) => !used.has(i));
+  const hasTop = topKeys.length > 0;
+
   const spec = (
     [
       ["계약 형태", e.contract],
@@ -70,15 +76,17 @@ function EstimateDetail() {
             {[e.trim, e.quotedAt ? `${e.quotedAt} 산출` : ""].filter(Boolean).join(" · ")}
           </p>
 
-          <div className="t-detail">
-            <div className="t-detail-ph">
-              <PhotoFrame
-                photos={e.photo}
-                alt={`${e.brand} ${e.model} 견적표`}
-                empty="견적표 사진 자리"
-                zoom
-              />
-            </div>
+          <div className="t-detail" data-nophoto={hasTop ? undefined : "1"}>
+            {hasTop ? (
+              <div className="t-detail-ph">
+                <PhotoFrame
+                  photos={photoJoin(topKeys)}
+                  alt={`${e.brand} ${e.model} 견적표`}
+                  empty=""
+                  zoom
+                />
+              </div>
+            ) : null}
             <aside className="t-detail-side">
               <dl className="t-spec">
                 {spec.map(([k, v]) => (
@@ -111,7 +119,7 @@ function EstimateDetail() {
 
           {e.body ? (
             <div className="t-detail-q">
-              <p>{e.body}</p>
+              <RichText text={e.body} photos={e.photo} alt={`${e.brand} ${e.model} 견적표`} />
             </div>
           ) : null}
 

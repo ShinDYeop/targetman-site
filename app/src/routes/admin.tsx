@@ -17,6 +17,8 @@ import {
   EMPTY_REVIEW,
   EMPTY_STOCK,
   EMPTY_VIDEO,
+  photoList,
+  photoUrl,
   youtubeId,
   youtubeThumb,
   type Comment,
@@ -56,6 +58,45 @@ function Field({
     <div className="t-field">
       <label>{label}</label>
       {children}
+    </div>
+  );
+}
+
+/**
+ * 글 사이에 사진을 넣는 도우미.
+ * 사진을 직접 글 안으로 끌어다 놓는 대신, [사진1] 같은 표시를 넣어 두면
+ * 사이트에서 그 자리에 사진이 들어갑니다. 표시는 그냥 글자라서 자유롭게 옮길 수 있습니다.
+ */
+function PhotoInsert({
+  photos,
+  onInsert,
+}: {
+  photos: string;
+  onInsert: (token: string) => void;
+}) {
+  const keys = photoList(photos);
+  if (keys.length === 0) return null;
+  return (
+    <div className="t-ins">
+      <div className="t-ins-hd">글 사이에 사진 넣기</div>
+      <div className="t-ins-row">
+        {keys.map((k, i) => (
+          <button
+            type="button"
+            key={`${k}-${i}`}
+            className="t-ins-b"
+            onClick={() => onInsert(`[사진${i + 1}]`)}
+          >
+            <img src={photoUrl(k)} alt="" />
+            <span>사진 {i + 1}</span>
+          </button>
+        ))}
+      </div>
+      <p className="t-small" style={{ marginTop: 8 }}>
+        누르면 글 맨 끝에 <b>[사진1]</b> 같은 표시가 들어갑니다. 그 표시를 원하는 문단
+        사이로 옮겨 두시면 사이트에서는 그 자리에 사진이 크게 들어갑니다. 표시를 지우면
+        그 사진은 글 위쪽 사진첩에 그대로 남습니다.
+      </p>
     </div>
   );
 }
@@ -425,10 +466,19 @@ function Admin() {
               </Field>
               <Field label="후기 원문 (고치지 마세요)">
                 <textarea
+                  rows={10}
                   value={editReview.quote}
                   onChange={(e) => setEditReview({ ...editReview, quote: e.target.value })}
                 />
               </Field>
+              <PhotoInsert
+                photos={editReview.photo}
+                onInsert={(tk) => {
+                  const q = editReview.quote;
+                  const sep = !q ? "" : q.endsWith("\n\n") ? "" : q.endsWith("\n") ? "\n" : "\n\n";
+                  setEditReview({ ...editReview, quote: `${q}${sep}${tk}\n\n` });
+                }}
+              />
               <div className="t-consent">
                 <label>
                   <input
@@ -600,6 +650,14 @@ function Admin() {
                   onChange={(e) => setEditEstimate({ ...editEstimate, body: e.target.value })}
                 />
               </Field>
+              <PhotoInsert
+                photos={editEstimate.photo}
+                onInsert={(tk) => {
+                  const q = editEstimate.body;
+                  const sep = !q ? "" : q.endsWith("\n\n") ? "" : q.endsWith("\n") ? "\n" : "\n\n";
+                  setEditEstimate({ ...editEstimate, body: `${q}${sep}${tk}\n\n` });
+                }}
+              />
               <p className="t-small" style={{ marginBottom: 12 }}>
                 줄바꿈은 그대로 나옵니다. 어떤 조건에서 뽑은 금액인지, 조건을 바꾸면 얼마가
                 되는지까지 적어 두시면 카톡 문의가 눈에 띄게 줄어듭니다.

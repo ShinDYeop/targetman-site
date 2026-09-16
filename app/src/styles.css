@@ -379,13 +379,6 @@ body.t-body {
 .t-rev-meta { font-size: 11.5px; color: var(--t-muted); letter-spacing: -0.01em; }
 .t-rev-q { font-size: 13.5px; line-height: 1.7; color: var(--t-ink-2); }
 .t-rev-who { font-size: 12px; color: var(--t-muted); font-weight: 500; }
-.t-rev-reply {
-  background: var(--t-surface-2); border-radius: var(--t-r-sm); border-left: 3px solid var(--t-accent);
-  padding: 10px 12px; font-size: 12.5px; line-height: 1.7; color: var(--t-ink-2); margin-top: auto;
-}
-.t-rev-reply b {
-  display: block; font-size: 10.5px; font-weight: 700; color: var(--t-accent-2); margin-bottom: 3px;
-}
 
 /* ---------- 재고 카드 ---------- */
 .t-stock {
@@ -631,7 +624,7 @@ body.t-body {
   border: 1px solid var(--t-line); border-left: 3px solid var(--t-accent);
   border-radius: var(--t-r); background: var(--t-surface);
 }
-.t-detail-q p { white-space: pre-line; overflow-wrap: anywhere; font-size: 15.5px; line-height: 1.85; color: var(--t-ink-2); }
+.t-detail-q > p, .t-detail-q .t-rt-p { white-space: pre-line; overflow-wrap: anywhere; font-size: 15.5px; line-height: 1.85; color: var(--t-ink-2); }
 .t-detail-q cite { display: block; margin-top: 12px; font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--t-muted); }
 .t-detail-cm { margin-top: 26px; }
 @media (min-width: 860px) {
@@ -775,3 +768,26 @@ body.t-body {
   font-size: 12px; line-height: 1.6; color: var(--t-muted);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+
+/* 본문에 사진을 다 넣어서 위 슬라이드가 필요 없을 때 */
+.t-detail[data-nophoto] { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 860px) {
+  .t-detail[data-nophoto] { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 관리자 — 글 사이에 사진 넣기 */
+.t-ins {
+  margin: -4px 0 14px; padding: 12px 13px 13px;
+  border: 1px dashed var(--t-line-2); border-radius: var(--t-r-sm); background: var(--t-surface-2);
+}
+.t-ins-hd { font-size: 12px; font-weight: 700; color: var(--t-ink-2); margin-bottom: 9px; }
+.t-ins-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.t-ins-b {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 10px 5px 5px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--t-line-2); background: var(--t-surface); color: var(--t-ink-2);
+  font-family: var(--t-sans); font-size: 12px; font-weight: 700;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.t-ins-b img { width: 30px; height: 22px; object-fit: cover; border-radius: 5px; display: block; }
+.t-ins-b:hover { border-color: var(--t-accent); color: var(--t-accent); }

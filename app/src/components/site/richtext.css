@@ -1,0 +1,36 @@
+/* 글 사이에 사진이 들어가는 본문 */
+.t-rt {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.t-rt-p {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--t-ink-2);
+  letter-spacing: -0.02em;
+}
+.t-rt-fig {
+  margin: 2px 0;
+}
+.t-rt-fig button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--t-line);
+  border-radius: var(--t-r-sm);
+  overflow: hidden;
+  background: var(--t-surface-2);
+  cursor: zoom-in;
+  transition: border-color 140ms ease;
+}
+.t-rt-fig button:hover {
+  border-color: var(--t-accent);
+}
+.t-rt-fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

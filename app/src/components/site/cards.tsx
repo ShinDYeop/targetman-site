@@ -9,6 +9,7 @@ import { kakaoLink } from "../../lib/site";
 import {
   photoList,
   photoUrl,
+  stripPhotoTokens,
   type Estimate,
   type Review,
   type StockItem,
@@ -203,7 +204,7 @@ export function ReviewCard({
             .filter(Boolean)
             .join(" · ")}
         </div>
-        {r.quote ? <p className="t-rev-q">{r.quote}</p> : null}
+        {r.quote ? <p className="t-rev-q">{stripPhotoTokens(r.quote)}</p> : null}
         {r.customer ? <p className="t-rev-who">{r.customer}</p> : null}
         <div className="t-rev-more">
           <span>댓글 {commentCount}</span>
@@ -337,7 +338,7 @@ export function EstimateCard({ e }: { e: Estimate }) {
           </div>
         ) : null}
 
-        {e.body ? <p className="t-est-text">{e.body}</p> : null}
+        {e.body ? <p className="t-est-text">{stripPhotoTokens(e.body)}</p> : null}
 
         <div className="t-est-more">
           <span className="t-est-go">
