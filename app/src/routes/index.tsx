@@ -21,7 +21,6 @@ const STEPS = [
 function Home() {
   const data = Route.useLoaderData();
   const latest = data.reviews.slice(0, 3);
-  const ledgerRows = data.reviews.slice(0, 6);
   const estimates = data.estimates.slice(0, 2);
 
   const sample = [
@@ -57,19 +56,6 @@ function Home() {
             >
               1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
             </a>
-          </div>
-
-          <div className="t-ledger t-rise t-rise-2">
-            <div className="t-ledger-hd">최근 출고 기록</div>
-            {ledgerRows.map((r) => (
-              <div className="t-ledger-row" key={r.id}>
-                <span className="t-no">No.{r.no}</span>
-                <span className="t-car">
-                  {r.brand} {r.model}
-                </span>
-                <span className="t-dt">{r.date}</span>
-              </div>
-            ))}
           </div>
         </section>
 

@@ -153,3 +153,12 @@
   line-height: 1.75;
   color: var(--t-ink-2);
 }
+
+
+/* 상세 페이지 — 사진을 자르지 않고 전부 보여 줍니다. 누르면 크게 열립니다. */
+.t-ph-one {
+  display: block; width: 100%; padding: 0; border: none;
+  background: var(--t-surface-2); cursor: zoom-in;
+}
+.t-ph[data-detail] .t-photos-i { aspect-ratio: 16 / 10; background: #0b1020; }
+.t-ph[data-detail] .t-photos-i img { object-fit: contain; }

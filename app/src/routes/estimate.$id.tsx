@@ -76,6 +76,7 @@ function EstimateDetail() {
                 photos={e.photo}
                 alt={`${e.brand} ${e.model} 견적표`}
                 empty="견적표 사진 자리"
+                zoom
               />
             </div>
             <aside className="t-detail-side">

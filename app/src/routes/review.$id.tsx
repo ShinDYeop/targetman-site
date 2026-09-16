@@ -77,6 +77,7 @@ function ReviewDetail() {
                 photos={r.photo}
                 alt={`${r.brand} ${r.model} 출고 사진`}
                 empty="고객 실사 사진 자리"
+                zoom
               />
             </div>
             <aside className="t-detail-side">

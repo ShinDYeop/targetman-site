@@ -1,0 +1,123 @@
+/* 사진 크게 보기 — 화면 전체를 덮습니다. */
+.t-lb {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(8, 11, 20, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.t-lb-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 16px 64px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.t-lb-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  cursor: zoom-in;
+  border-radius: 4px;
+}
+/* 원본 크기로 펼친 상태 — 넘치는 만큼 끌어서 봅니다. */
+.t-lb-stage[data-full] {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.t-lb-stage[data-full] img {
+  max-width: none;
+  max-height: none;
+  cursor: zoom-out;
+  margin: auto;
+}
+
+.t-lb-x,
+.t-lb-nav {
+  position: absolute;
+  z-index: 2;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  transition: background 150ms ease, opacity 150ms ease;
+}
+.t-lb-x:hover,
+.t-lb-nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.t-lb-x {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 12px;
+  width: 42px;
+  height: 42px;
+  font-size: 26px;
+  padding-bottom: 3px;
+}
+
+.t-lb-nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  font-size: 27px;
+  padding-bottom: 3px;
+}
+.t-lb-nav[data-d="prev"] { left: 10px; }
+.t-lb-nav[data-d="next"] { right: 10px; }
+.t-lb-nav:disabled { opacity: 0.2; cursor: default; }
+
+.t-lb-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 16px;
+  pointer-events: none;
+}
+.t-lb-n {
+  font-family: var(--t-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 5px 10px;
+}
+.t-lb-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: -0.02em;
+}
+
+/* 카드 안에서 누를 수 있는 사진 */
+.t-ph-zoom {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+}
+.t-ph-zoom img { width: 100%; height: 100%; object-fit: cover; display: block; }
