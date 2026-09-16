@@ -391,7 +391,7 @@ body.t-body {
 .t-spec { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 6px 14px; margin: 10px 0 0; }
 .t-spec div { font-size: 12.5px; color: var(--t-ink-2); }
 .t-spec dt { font-size: 10.5px; color: var(--t-muted); margin: 0; font-weight: 500; }
-.t-spec dd { margin: 1px 0 0; font-size: 12.5px; color: var(--t-ink); font-weight: 500; }
+.t-spec dd { margin: 1px 0 0; font-size: 12.5px; color: var(--t-ink); font-weight: 500; overflow-wrap: anywhere; word-break: keep-all; }
 .t-price {
   margin-top: 12px; font-family: var(--t-mono); font-size: 18px; font-weight: 600;
   color: var(--t-accent-2); letter-spacing: -0.03em;
@@ -612,7 +612,7 @@ body.t-body {
   border: 1px solid var(--t-line); border-left: 3px solid var(--t-accent);
   border-radius: var(--t-r); background: var(--t-surface);
 }
-.t-detail-q p { white-space: pre-line; font-size: 15.5px; line-height: 1.85; color: var(--t-ink-2); }
+.t-detail-q p { white-space: pre-line; overflow-wrap: anywhere; font-size: 15.5px; line-height: 1.85; color: var(--t-ink-2); }
 .t-detail-q cite { display: block; margin-top: 12px; font-style: normal; font-size: 12.5px; font-weight: 600; color: var(--t-muted); }
 .t-detail-cm { margin-top: 26px; }
 @media (min-width: 860px) {

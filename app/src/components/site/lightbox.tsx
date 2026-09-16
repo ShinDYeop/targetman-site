@@ -23,8 +23,12 @@ export function Lightbox({
   onClose: () => void;
 }) {
   const [full, setFull] = useState(false);
+  const [canZoom, setCanZoom] = useState(false);
 
-  useEffect(() => setFull(false), [index]);
+  useEffect(() => {
+    setFull(false);
+    setCanZoom(false);
+  }, [index]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -51,13 +55,26 @@ export function Lightbox({
       aria-label="사진 크게 보기"
       onClick={onClose}
     >
-      <div className="t-lb-stage" data-full={full ? "1" : undefined} onClick={onClose}>
+      <div
+        className="t-lb-stage"
+        data-full={full ? "1" : undefined}
+        data-zoomable={canZoom ? "1" : undefined}
+        onClick={onClose}
+      >
         <img
           src={photoUrl(keys[index])}
           alt={alt}
+          onLoad={(e) => {
+            // 화면에 맞춘 크기보다 원본이 크면 그때만 확대를 안내합니다.
+            if (full) return;
+            const el = e.currentTarget;
+            setCanZoom(
+              el.naturalWidth > el.clientWidth + 4 || el.naturalHeight > el.clientHeight + 4,
+            );
+          }}
           onClick={(e) => {
             e.stopPropagation();
-            setFull((v) => !v);
+            if (canZoom) setFull((v) => !v);
           }}
         />
       </div>
@@ -104,7 +121,11 @@ export function Lightbox({
           </span>
         ) : null}
         <span className="t-lb-hint">
-          {full ? "사진을 다시 누르면 화면에 맞춥니다" : "사진을 누르면 원본 크기로 커집니다"}
+          {canZoom
+            ? full
+              ? "끌어서 보시고, 사진을 다시 누르면 화면에 맞춥니다"
+              : "사진을 누르면 원본 크기로 커집니다"
+            : "바깥을 누르면 닫힙니다"}
         </span>
       </div>
     </div>

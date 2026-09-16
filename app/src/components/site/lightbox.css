@@ -26,9 +26,10 @@
   height: auto;
   object-fit: contain;
   display: block;
-  cursor: zoom-in;
+  cursor: default;
   border-radius: 4px;
 }
+.t-lb-stage[data-zoomable] img { cursor: zoom-in; }
 /* 원본 크기로 펼친 상태 — 넘치는 만큼 끌어서 봅니다. */
 .t-lb-stage[data-full] {
   align-items: flex-start;
