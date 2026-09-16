@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 
 import { Page, SecHead } from "../components/site/chrome";
 import { loadSiteContent } from "../lib/api/content.functions";
 import { loadLatestVideos, type LatestVideo } from "../lib/api/youtube.functions";
-import { youtubeThumb, youtubeWatch, type Video } from "../lib/content";
+import { youtubeThumb, youtubeWatch } from "../lib/content";
 import { SITE, kakaoLink } from "../lib/site";
 
 export const Route = createFileRoute("/videos")({
@@ -26,39 +25,9 @@ export const Route = createFileRoute("/videos")({
 });
 
 /**
- * 영상 한 칸. 썸네일은 유튜브에 올린 그대로를 불러옵니다.
- * 큰 판(maxres)이 없는 영상도 있어서, 안 뜨면 작은 판으로 한 번 되돌립니다.
+ * 채널에서 막 가져온 영상 한 칸.
+ * 썸네일과 제목은 유튜브에 올린 그대로이고, 누르면 유튜브에서 열립니다.
  */
-function VideoCard({ v }: { v: Video }) {
-  if (!v.videoId) return null;
-
-  return (
-    <a
-      className="t-vid"
-      href={youtubeWatch(v.videoId)}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={`${v.title || v.brand} 영상 보기 (유튜브에서 열림)`}
-    >
-      <span className="t-vid-th">
-        <img src={youtubeThumb(v.videoId)} alt="" loading="lazy" />
-        <span className="t-vid-play" aria-hidden="true">
-          <svg viewBox="0 0 28 20" focusable="false">
-            <rect width="28" height="20" rx="5" fill="#ff0000" />
-            <path d="M11.4 5.8 18.6 10l-7.2 4.2V5.8Z" fill="#fff" />
-          </svg>
-        </span>
-      </span>
-      <span className="t-vid-body">
-        {v.brand ? <span className="t-vid-brand">{v.brand}</span> : null}
-        <span className="t-vid-title">{v.title || v.brand || "영상 보기"}</span>
-        {v.note ? <span className="t-vid-note">{v.note}</span> : null}
-      </span>
-    </a>
-  );
-}
-
-/** 채널에서 막 가져온 영상 한 칸. 직접 등록한 영상 카드와 생김새를 맞춥니다. */
 function LatestCard({ v }: { v: LatestVideo }) {
   const when = v.published ? v.published.slice(0, 10).replace(/-/g, ".") : "";
   return (
@@ -88,11 +57,6 @@ function LatestCard({ v }: { v: LatestVideo }) {
 
 function Videos() {
   const data = Route.useLoaderData();
-  const videos = data.videos.filter((v) => v.videoId);
-  const [brand, setBrand] = useState("전체");
-
-  const brands = ["전체", ...Array.from(new Set(videos.map((v) => v.brand).filter(Boolean)))];
-  const list = videos.filter((v) => brand === "전체" || v.brand === brand);
 
   return (
     <Page src="videos">
@@ -143,41 +107,6 @@ function Videos() {
             </div>
           )}
         </section>
-
-        {videos.length > 0 ? (
-          <section className="t-sec">
-            <SecHead ix="정리" title="차종별로 골라 보기" />
-            {brands.length > 2 ? (
-              <div className="t-chips">
-                {brands.map((b) => (
-                  <button
-                    key={b}
-                    type="button"
-                    className="t-chip"
-                    data-on={brand === b ? "1" : undefined}
-                    onClick={() => setBrand(b)}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            <div className="t-vids">
-              {list.map((v) => (
-                <VideoCard key={v.id} v={v} />
-              ))}
-            </div>
-
-            {list.length === 0 ? (
-              <p className="t-note">이 브랜드로 걸어 둔 영상이 아직 없습니다.</p>
-            ) : null}
-
-            <p className="t-small" style={{ marginTop: 16 }}>
-              썸네일과 제목은 유튜브에 올라간 그대로입니다. 누르면 유튜브에서 열립니다.
-            </p>
-          </section>
-        ) : null}
 
         <section className="t-sec">
           <div className="t-card t-col">

@@ -915,9 +915,10 @@ function Admin() {
               >
                 새 영상 등록
               </button>
-              <p className="t-small" style={{ marginTop: 10 }}>
-                영상 파일을 올리는 게 아니라 유튜브 주소만 걸어 두는 방식입니다. 유튜브에서
-                영상을 지우거나 비공개로 돌리면 여기서도 안 보이게 됩니다.
+              <p className="t-note" style={{ marginTop: 12 }}>
+                지금 사이트 영상 페이지에는 <b>채널 최신 영상 6개가 자동으로</b> 나옵니다.
+                여기 등록한 영상은 화면에 보이지 않습니다. 직접 고른 영상을 따로 보여 주고
+                싶으시면 말씀해 주세요.
               </p>
 
               <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
