@@ -18,7 +18,7 @@ import {
   EMPTY_STOCK,
   EMPTY_VIDEO,
   photoList,
-  photoUrl,
+  remapPhotoTokens,
   youtubeId,
   youtubeThumb,
   type Comment,
@@ -29,6 +29,7 @@ import {
   type Video,
 } from "../lib/content";
 import { MultiPhotoPicker } from "../components/admin/photos";
+import { BodyPhotos } from "../components/admin/body-photos";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -63,42 +64,20 @@ function Field({
 }
 
 /**
- * 글 사이에 사진을 넣는 도우미.
- * 사진을 직접 글 안으로 끌어다 놓는 대신, [사진1] 같은 표시를 넣어 두면
- * 사이트에서 그 자리에 사진이 들어갑니다. 표시는 그냥 글자라서 자유롭게 옮길 수 있습니다.
+ * 위쪽 사진첩에서 사진을 지우거나 순서를 바꾸면 사진 번호가 밀립니다.
+ * 그때 본문에 적어 둔 [사진N] 표시도 같이 고쳐 줘야 엉뚱한 사진이 끼지 않습니다.
+ * 사진 이름(키)으로 비교해서 새 번호를 찾고, 편집으로 사진이 바뀐 자리는 번호를 유지합니다.
  */
-function PhotoInsert({
-  photos,
-  onInsert,
-}: {
-  photos: string;
-  onInsert: (token: string) => void;
-}) {
-  const keys = photoList(photos);
-  if (keys.length === 0) return null;
-  return (
-    <div className="t-ins">
-      <div className="t-ins-hd">글 사이에 사진 넣기</div>
-      <div className="t-ins-row">
-        {keys.map((k, i) => (
-          <button
-            type="button"
-            key={`${k}-${i}`}
-            className="t-ins-b"
-            onClick={() => onInsert(`[사진${i + 1}]`)}
-          >
-            <img src={photoUrl(k)} alt="" />
-            <span>사진 {i + 1}</span>
-          </button>
-        ))}
-      </div>
-      <p className="t-small" style={{ marginTop: 8 }}>
-        누르면 글 맨 끝에 <b>[사진1]</b> 같은 표시가 들어갑니다. 그 표시를 원하는 문단
-        사이로 옮겨 두시면 사이트에서는 그 자리에 사진이 크게 들어갑니다. 표시를 지우면
-        그 사진은 글 위쪽 사진첩에 그대로 남습니다.
-      </p>
-    </div>
-  );
+function syncTokens(before: string, after: string, body: string): string {
+  const old = photoList(before);
+  const next = photoList(after);
+  const map = old.map((k, i) => {
+    const found = next.indexOf(k);
+    if (found >= 0) return found;
+    if (next.length === old.length && next[i] && old.indexOf(next[i]) < 0) return i;
+    return -1;
+  });
+  return remapPhotoTokens(body, map);
 }
 
 function Admin() {
@@ -388,11 +367,17 @@ function Admin() {
                 {editReview.id > 0 ? "후기 수정" : "새 후기"}
               </h2>
               <MultiPhotoPicker
-                label="출고 사진"
                 value={editReview.photo}
                 password={password}
-                onChange={(photo) => setEditReview({ ...editReview, photo })}
-                hint="여러 장 한 번에 고를 수 있습니다. 올린 뒤 편집을 눌러 번호판과 얼굴을 모자이크하세요. 맨 앞 사진이 목록에 대표로 나옵니다."
+                onChange={(photo) =>
+                  setEditReview({
+                    ...editReview,
+                    photo,
+                    quote: syncTokens(editReview.photo, photo, editReview.quote),
+                  })
+                }
+                label="사진첩 (글 위에 나오는 사진)"
+                hint="여러 장 한 번에 고를 수 있습니다. 올린 뒤 편집을 눌러 번호판과 얼굴을 모자이크하세요. 맨 앞 사진이 목록에 대표로 나옵니다. 본문 안에 넣은 사진은 여기서 자동으로 빠집니다."
               />
               <Field label="출고일">
                 <input
@@ -471,13 +456,13 @@ function Admin() {
                   onChange={(e) => setEditReview({ ...editReview, quote: e.target.value })}
                 />
               </Field>
-              <PhotoInsert
+              <BodyPhotos
                 photos={editReview.photo}
-                onInsert={(tk) => {
-                  const q = editReview.quote;
-                  const sep = !q ? "" : q.endsWith("\n\n") ? "" : q.endsWith("\n") ? "\n" : "\n\n";
-                  setEditReview({ ...editReview, quote: `${q}${sep}${tk}\n\n` });
-                }}
+                body={editReview.quote}
+                password={password}
+                onChange={({ photos, body }) =>
+                  setEditReview({ ...editReview, photo: photos, quote: body })
+                }
               />
               <div className="t-consent">
                 <label>
@@ -579,7 +564,13 @@ function Admin() {
                 label="견적표 사진"
                 value={editEstimate.photo}
                 password={password}
-                onChange={(photo) => setEditEstimate({ ...editEstimate, photo })}
+                onChange={(photo) =>
+                  setEditEstimate({
+                    ...editEstimate,
+                    photo,
+                    body: syncTokens(editEstimate.photo, photo, editEstimate.body),
+                  })
+                }
                 hint="카톡 견적표를 캡처해서 그대로 올리시면 됩니다. 올린 뒤 반드시 편집을 눌러 고객명과 연락처를 모자이크하세요."
               />
               <div className="t-fieldrow">
@@ -650,13 +641,13 @@ function Admin() {
                   onChange={(e) => setEditEstimate({ ...editEstimate, body: e.target.value })}
                 />
               </Field>
-              <PhotoInsert
+              <BodyPhotos
                 photos={editEstimate.photo}
-                onInsert={(tk) => {
-                  const q = editEstimate.body;
-                  const sep = !q ? "" : q.endsWith("\n\n") ? "" : q.endsWith("\n") ? "\n" : "\n\n";
-                  setEditEstimate({ ...editEstimate, body: `${q}${sep}${tk}\n\n` });
-                }}
+                body={editEstimate.body}
+                password={password}
+                onChange={({ photos, body }) =>
+                  setEditEstimate({ ...editEstimate, photo: photos, body })
+                }
               />
               <p className="t-small" style={{ marginBottom: 12 }}>
                 줄바꿈은 그대로 나옵니다. 어떤 조건에서 뽑은 금액인지, 조건을 바꾸면 얼마가

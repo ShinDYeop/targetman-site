@@ -241,3 +241,18 @@ export function stripPhotoTokens(text: string): string {
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
+
+/**
+ * 사진 목록이 바뀌었을 때 본문의 [사진N] 번호를 다시 매깁니다.
+ * map[예전번호] = 새 번호, -1 이면 그 사진은 없어진 것이라 표시를 지웁니다.
+ */
+export function remapPhotoTokens(text: string, map: number[]): string {
+  return (text || "")
+    .replace(/\[사진\s*(\d{1,2})\]/g, (_whole, d: string) => {
+      const before = Number(d) - 1;
+      const after = map[before];
+      if (after === undefined || after < 0) return "";
+      return `[사진${after + 1}]`;
+    })
+    .replace(/\n{3,}/g, "\n\n");
+}

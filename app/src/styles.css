@@ -775,11 +775,27 @@ body.t-body {
   .t-detail[data-nophoto] { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* 관리자 — 글 사이에 사진 넣기 */
-.t-ins {
-  margin: -4px 0 14px; padding: 12px 13px 13px;
-  border: 1px dashed var(--t-line-2); border-radius: var(--t-r-sm); background: var(--t-surface-2);
+/* 관리자 — 본문 사진 */
+.t-bp {
+  margin: -4px 0 16px; padding: 13px 14px 14px;
+  border: 1px dashed var(--t-accent); border-radius: var(--t-r-sm);
+  background: rgba(232, 90, 38, 0.04);
 }
+.t-bp-hd { font-size: 13px; font-weight: 800; color: var(--t-ink); margin-bottom: 9px; letter-spacing: -0.02em; }
+.t-bp-sub {
+  margin: 14px 0 8px; font-size: 11.5px; font-weight: 700; color: var(--t-muted);
+  letter-spacing: -0.01em;
+}
+.t-bp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.t-bp-i { border: 1px solid var(--t-line); border-radius: 10px; overflow: hidden; background: var(--t-surface); }
+.t-bp-th { position: relative; aspect-ratio: 4 / 3; background: #000; }
+.t-bp-th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.t-bp-tag {
+  position: absolute; left: 6px; top: 6px;
+  font-family: var(--t-mono); font-size: 10.5px; font-weight: 600;
+  padding: 3px 7px; border-radius: 6px; background: rgba(11, 16, 32, 0.78); color: #fff;
+}
+.t-bp-btns { display: flex; gap: 5px; padding: 7px; flex-wrap: wrap; }
 .t-ins-hd { font-size: 12px; font-weight: 700; color: var(--t-ink-2); margin-bottom: 9px; }
 .t-ins-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .t-ins-b {
