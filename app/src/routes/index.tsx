@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Page, SecHead, BrandMark } from "../components/site/chrome";
+import { Page, SecHead } from "../components/site/chrome";
 import { ReviewCard, EstimateCard } from "../components/site/cards";
 import { loadSiteContent } from "../lib/api/content.functions";
 import { SITE, kakaoLink } from "../lib/site";
@@ -221,18 +221,28 @@ function Home() {
         <section className="t-sec">
           <SecHead ix="05" title="담당자" />
           <div className="t-grid2">
-            <div className="t-card">
-              <BrandMark size={64} />
-              <h3 style={{ fontSize: 18, marginTop: 10 }}>{SITE.brand}</h3>
-              <p className="t-lede" style={{ marginTop: 8 }}>
-                유튜브 채널에서 차량 리뷰와 리스 장기렌트 조건을 설명하는 사람과 실제 계약을
-                담당하는 사람이 같습니다. 상담 중 담당자가 바뀌지 않습니다.
-              </p>
-              <p style={{ marginTop: 14 }}>
-                <Link to="/about" className="t-cta-text">
-                  담당자 소개 <i aria-hidden="true">&rsaquo;</i>
-                </Link>
-              </p>
+            <div className="t-card t-person">
+              <img
+                className="t-person-ph"
+                src="/shin-dongyeop.jpg"
+                alt="타겟맨 신동엽"
+                width={640}
+                height={800}
+                loading="lazy"
+              />
+              <div className="t-person-txt">
+                <div className="t-eyebrow">담당자</div>
+                <h3 style={{ fontSize: 18, marginTop: 6 }}>{SITE.brand}</h3>
+                <p className="t-lede" style={{ marginTop: 8 }}>
+                  유튜브 채널에서 차량 리뷰와 리스 장기렌트 조건을 설명하는 사람과 실제
+                  계약을 담당하는 사람이 같습니다. 상담 중 담당자가 바뀌지 않습니다.
+                </p>
+                <p style={{ marginTop: 14 }}>
+                  <Link to="/about" className="t-cta-text">
+                    담당자 소개 <i aria-hidden="true">&rsaquo;</i>
+                  </Link>
+                </p>
+              </div>
             </div>
             <div className="t-card">
               <div className="t-eyebrow">YouTube</div>
