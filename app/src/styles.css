@@ -846,7 +846,7 @@ body.t-body {
 
 /* 담당자 소개 페이지 */
 .t-about-ph {
-  width: 100%; max-width: 208px; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+  width: 208px; max-width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
   border-radius: 14px; border: 1px solid var(--t-line); background: var(--t-surface-2);
   display: block;
 }
