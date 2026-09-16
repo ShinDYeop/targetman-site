@@ -44,8 +44,8 @@ function Home() {
                 출고 끝까지 직접 담당합니다.
               </h1>
               <p className="t-sub t-rise t-rise-3">
-                몇 대를 인도했는지, 고객이 실제로 뭐라고 했는지, 어떤 차가 어떤 조건에서
-                얼마였는지 전부 이 페이지에 있습니다.
+                타겟맨은 고객님이 원하시는 타겟차량을 가장 합리적이고 빠르게
+                출고해드립니다.
               </p>
               <div className="t-hero-actions">
                 <Link to="/estimates" className="t-cta-plate">
