@@ -35,28 +35,46 @@ function Home() {
     <Page src="home" sample={sample}>
       <div className="t-wrap">
         <section className="t-hero">
-          <div className="t-eyebrow t-rise">리스 · 장기렌트 출고 대장</div>
-          <h1 className="t-rise t-rise-2">
-            유튜브에서 보시던 타겟맨이,
-            <br />
-            출고 끝까지 직접 담당합니다.
-          </h1>
-          <p className="t-sub t-rise t-rise-3">
-            몇 대를 인도했는지, 고객이 실제로 뭐라고 했는지, 어떤 차가 어떤 조건에서
-            얼마였는지 전부 이 페이지에 있습니다.
-          </p>
-          <div className="t-hero-actions">
-            <Link to="/estimates" className="t-cta-plate">
-              차량별 견적 보기
-            </Link>
-            <a
-              className="t-cta-text"
-              href={kakaoLink("home_hero")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
-            </a>
+          <div className="t-hero-grid">
+            <div className="t-hero-txt">
+              <div className="t-eyebrow t-rise">리스 · 장기렌트 출고 대장</div>
+              <h1 className="t-rise t-rise-2">
+                유튜브에서 보시던 타겟맨이,
+                <br />
+                출고 끝까지 직접 담당합니다.
+              </h1>
+              <p className="t-sub t-rise t-rise-3">
+                몇 대를 인도했는지, 고객이 실제로 뭐라고 했는지, 어떤 차가 어떤 조건에서
+                얼마였는지 전부 이 페이지에 있습니다.
+              </p>
+              <div className="t-hero-actions">
+                <Link to="/estimates" className="t-cta-plate">
+                  차량별 견적 보기
+                </Link>
+                <a
+                  className="t-cta-text"
+                  href={kakaoLink("home_hero")}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  1:1 카톡 상담 <i aria-hidden="true">&rsaquo;</i>
+                </a>
+              </div>
+            </div>
+
+            <figure className="t-hero-me t-rise t-rise-3">
+              <img
+                src="/shin-dongyeop.jpg"
+                alt="타겟맨 신동엽"
+                width={640}
+                height={800}
+                fetchPriority="high"
+              />
+              <figcaption>
+                {SITE.brand}
+                <span>리스 · 장기렌트 상담 · 출고 담당</span>
+              </figcaption>
+            </figure>
           </div>
 
           <div className="t-ledger t-rise t-rise-2">
