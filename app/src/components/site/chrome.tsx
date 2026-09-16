@@ -108,8 +108,6 @@ export function Footer() {
         <div>
           <b>사업장</b>
           {SITE.address}
-          <br />
-          상담 가능 시간 평일 09~19시
         </div>
         <div>
           <b>개인정보 안내</b>
