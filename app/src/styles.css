@@ -581,7 +581,11 @@ body.t-body {
 .t-rev-a { color: inherit; text-decoration: none; }
 .t-rev-a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--t-r); }
 .t-rev-a:focus-visible::after { outline: 2px solid var(--t-accent); outline-offset: 2px; }
-.t-rev .t-photos, .t-rev .t-ph-nav, .t-rev .t-ph-dots, .t-rev .t-photos-n { position: relative; z-index: 2; }
+/* 사진을 눌러도 상세로 들어가도록 사진 트랙은 링크 아래에 둡니다.
+   대신 좌우 화살표와 아래 점은 링크 위에 남겨서 카드에서도 사진을 넘길 수 있습니다. */
+.t-rev .t-ph-nav, .t-rev .t-ph-dots { z-index: 2; }
+.t-rev .t-photos-n { z-index: 2; }
+.t-rev .t-photos { touch-action: pan-y; }
 .t-rev .t-ph-nav, .t-rev .t-ph-dots, .t-rev .t-photos-n { position: absolute; }
 .t-rev[data-linked] .t-rev-q {
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;

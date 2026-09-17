@@ -116,13 +116,6 @@ function Home() {
               <small>대</small>
             </dd>
           </div>
-          <div>
-            <dt>등록된 후기</dt>
-            <dd>
-              {data.reviews.length}
-              <small>건</small>
-            </dd>
-          </div>
         </dl>
 
         <section className="t-sec">
