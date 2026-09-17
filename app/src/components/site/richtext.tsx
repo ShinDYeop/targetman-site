@@ -1,11 +1,55 @@
 import "./richtext.css";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Lightbox } from "./lightbox";
 import { photoList, photoUrl } from "../../lib/content";
 
 const SPLIT = /(\[사진\s*\d{1,2}\])/;
+
+/**
+ * 본문 사진 한 장.
+ * 카톡 화면처럼 세로로 아주 긴 사진은 그대로 두면 글을 덮어 버립니다.
+ * 그래서 긴 사진은 위쪽만 보여 주는 창으로 줄이고, 아래를 흐리게 해서
+ * 더 있다는 걸 알려 줍니다. 전체는 눌러서 보시면 됩니다.
+ */
+function BodyPhoto({
+  src,
+  alt,
+  onOpen,
+}: {
+  src: string;
+  alt: string;
+  onOpen: () => void;
+}) {
+  const ref = useRef<HTMLImageElement | null>(null);
+  const [tall, setTall] = useState(false);
+
+  function check(el: HTMLImageElement | null) {
+    if (!el || !el.naturalWidth) return;
+    if (el.naturalHeight > el.naturalWidth * 1.6) setTall(true);
+  }
+
+  useEffect(() => {
+    const el = ref.current;
+    if (el?.complete) check(el);
+  }, []);
+
+  return (
+    <figure className="t-rt-fig" data-tall={tall ? "1" : undefined}>
+      <button type="button" onClick={onOpen} aria-label={`${alt} 크게 보기`}>
+        <img
+          ref={ref}
+          src={src}
+          alt={alt}
+          loading="lazy"
+          onLoad={(e) => check(e.currentTarget)}
+        />
+      </button>
+      <figcaption>{tall ? "일부만 보입니다 · 눌러서 전체 보기" : "눌러서 크게 보기"}</figcaption>
+    </figure>
+  );
+}
 const ONE = /^\[사진\s*(\d{1,2})\]$/;
 
 /**
@@ -34,16 +78,12 @@ export function RichText({
           const n = Number(m[1]) - 1;
           if (!keys[n]) return null;
           return (
-            <figure className="t-rt-fig" key={`f-${i}`}>
-              <button
-                type="button"
-                onClick={() => setLb(n)}
-                aria-label={`${n + 1}번째 사진 크게 보기`}
-              >
-                <img src={photoUrl(keys[n])} alt={`${alt} ${n + 1}`} loading="lazy" />
-              </button>
-              <figcaption>눌러서 크게 보기</figcaption>
-            </figure>
+            <BodyPhoto
+              key={`f-${i}`}
+              src={photoUrl(keys[n])}
+              alt={`${alt} ${n + 1}`}
+              onOpen={() => setLb(n)}
+            />
           );
         }
         const t = part.replace(/^\n+/, "").replace(/\n+$/, "");

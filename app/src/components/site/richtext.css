@@ -63,7 +63,33 @@
   letter-spacing: -0.01em;
   line-height: 1.5;
 }
+/* 세로로 아주 긴 사진 — 위쪽만 보여 주는 창 */
+.t-rt-fig[data-tall] button {
+  width: 360px;
+  max-width: 100%;
+  height: 430px;
+}
+.t-rt-fig[data-tall] img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  object-position: top center;
+}
+.t-rt-fig[data-tall] button::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 86px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--t-surface));
+  pointer-events: none;
+}
+
 @media (max-width: 560px) {
   .t-rt-fig button { max-width: 78%; }
   .t-rt-fig img { max-height: 400px; }
+  .t-rt-fig[data-tall] button { width: 100%; max-width: 300px; height: 380px; }
+  .t-rt-fig[data-tall] img { max-height: none; }
 }
