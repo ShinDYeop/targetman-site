@@ -42,6 +42,7 @@ export function RichText({
               >
                 <img src={photoUrl(keys[n])} alt={`${alt} ${n + 1}`} loading="lazy" />
               </button>
+              <figcaption>눌러서 크게 보기</figcaption>
             </figure>
           );
         }
